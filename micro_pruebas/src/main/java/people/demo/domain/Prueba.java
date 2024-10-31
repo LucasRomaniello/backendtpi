@@ -37,4 +37,14 @@ public class Prueba {
 
 
     public Prueba() {}
+
+    public Prueba update(Prueba prueba) {
+        id = prueba.id;
+        interesado = prueba.interesado;
+        empleado = prueba.empleado;
+        fechaHoraInicio = prueba.fechaHoraInicio;
+        fechaHoraFin = prueba.fechaHoraFin;
+        comentarios= prueba.comentarios;
+        return this;
+    }
 }

@@ -3,9 +3,7 @@ package people.demo.web.api.dto;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import people.demo.domain.Empleado;
 import people.demo.domain.Interesado;
-import people.demo.domain.Prueba;
 
 import java.util.Date;
 
@@ -32,7 +30,25 @@ public class InteresadoDTO {
 
     public InteresadoDTO(Interesado entity){
         id = entity.getId();
+        tipo_documento = entity.getTipo_documento();
+        documento = entity.getDocumento();
+        nombre = entity.getNombre();
+        apellido = entity.getApellido();
+        restringido = entity.getRestringido();
+        nro_licencia =entity.getNro_licencia();
+        fecha_vencimiento_licencia = entity.getFecha_vencimiento_licencia();
     }
+    public Interesado toEntity(InteresadoDTO interesadoDTO) {
+        if (interesadoDTO == null) return null;
 
-    public Interesado toEntity(){ return new Interesado(id, tipo_documento, documento, nombre, apellido, restringido, nro_licencia, fecha_vencimiento_licencia);}
+        Interesado interesado = new Interesado();
+        interesado.setId(interesadoDTO.getId());
+        interesado.setDocumento(interesadoDTO.getDocumento());
+        interesado.setNombre(interesadoDTO.getNombre());
+        interesado.setNro_licencia(interesadoDTO.getNro_licencia());
+        interesado.setRestringido(interesadoDTO.getRestringido());
+        interesado.setApellido(interesadoDTO.getApellido());
+        interesado.setFecha_vencimiento_licencia(interesadoDTO.getFecha_vencimiento_licencia());
+        return interesado;
+    }
 }

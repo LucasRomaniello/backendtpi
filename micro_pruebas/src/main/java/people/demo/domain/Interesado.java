@@ -40,18 +40,33 @@ public class Interesado {
     @OneToMany(mappedBy = "interesado")
     private Set<Prueba> pruebas = new HashSet<>();
 
+    //ADD PRUEBA---------------------------------//////
+
     public Interesado() {
 
     }
 
-    public Interesado(Integer id, String tipoDocumento, String documento, String nombre, String apellido, Boolean restringido, Integer nroLicencia, Date fechaVencimientoLicencia) {
+    public Interesado(Integer id, String tipo_documento, String documento, String nombre, String apellido, Boolean restringido, Integer nro_licencia, Date fecha_vencimiento_licencia) {
         this.id = id;
-        this.tipo_documento = tipoDocumento;
+        this.tipo_documento = Interesado.this.tipo_documento;
         this.documento = documento;
         this.nombre = nombre;
         this.apellido = apellido;
         this.restringido= restringido;
-        this.nro_licencia = nroLicencia;
-        this.fecha_vencimiento_licencia = fechaVencimientoLicencia;
+        this.nro_licencia = nro_licencia;
+        this.fecha_vencimiento_licencia = fecha_vencimiento_licencia;
+    }
+
+    public Interesado update(Interesado interesado) {
+        id = interesado.id;
+        tipo_documento = interesado.tipo_documento;
+        documento = interesado.documento;
+        nombre = interesado.nombre;
+        apellido = interesado.apellido;
+        restringido= interesado.restringido;
+        nro_licencia = interesado.nro_licencia;
+        fecha_vencimiento_licencia = interesado.fecha_vencimiento_licencia;
+
+        return this;
     }
 }

@@ -29,6 +29,9 @@ public class Empleado {
     @OneToMany(mappedBy = "empleado")
     private Set<Prueba> pruebas = new HashSet<>();
 
+
+    //ADD PRUEBA---------------------------------//////
+
     public Empleado() {
 
     }
