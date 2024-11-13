@@ -18,7 +18,7 @@ import java.util.Set;
 @AllArgsConstructor
 @ToString
 @Entity
-@Table(name = "interesado")
+@Table(name = "interesados")
 public class Interesado {
     @Id
     private Integer id;

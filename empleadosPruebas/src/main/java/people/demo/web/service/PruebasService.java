@@ -75,8 +75,8 @@ public class PruebasService {
     public PruebaDTO update (Integer pid, PruebaDTO pruebaDTO){
 
         //REVISAR----------------------------------------------------
-        //Interesado interesado = buscarInteresado(pruebaDTO.getId_interesado());
-        //Empleado empleado = buscarEmpleado(pruebaDTO.getLegajo_empleado());
+        Interesado interesado = buscarInteresado(pruebaDTO.getId_interesado());
+        Empleado empleado = buscarEmpleado(pruebaDTO.getLegajo_empleado());
 
         //interesado
 
