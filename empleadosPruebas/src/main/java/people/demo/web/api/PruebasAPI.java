@@ -9,7 +9,6 @@ import people.demo.web.api.dto.PruebaDTO;
 import people.demo.web.service.PruebasService;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -57,12 +56,11 @@ public class PruebasAPI {
         return new ResponseEntity<>(pruebasService.add(pruebaDTO), HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/")
     public ResponseEntity<PruebaDTO> updatePrueba(
-            @PathVariable Integer id,
             @Valid @RequestBody PruebaDTO pruebaDTO
     ) {
-        return new ResponseEntity<>(pruebasService.update(id, pruebaDTO), HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(pruebasService.update(pruebaDTO), HttpStatus.ACCEPTED);
     }
 
     @DeleteMapping("/{id}")

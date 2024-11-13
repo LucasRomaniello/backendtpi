@@ -34,6 +34,7 @@ public class PruebaDTO {
         this.id_vehiculo = prueba.getId_vehiculo();
         this.legajo_empleado = prueba.getEmpleado().getLegajo();
         this.fechaHoraInicio = prueba.getFechaHoraInicio();
+        this.fechaHoraFin = prueba.getFechaHoraFin();
         this.comentarios = prueba.getComentarios();
     }
 

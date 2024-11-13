@@ -11,6 +11,7 @@ import people.demo.domain.Prueba;
 import people.demo.web.api.dto.PruebaDTO;
 import people.demo.web.api.exception.ResourceNotFoundException;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -90,28 +91,26 @@ public class PruebasService {
 
 
 
-    public PruebaDTO update (Integer pid, PruebaDTO pruebaDTO){
+
+
+    public PruebaDTO update (PruebaDTO pruebaDTO){
 
         //REVISAR----------------------------------------------------
         Interesado interesado = buscarInteresado(pruebaDTO.getId_interesado());
         Empleado empleado = buscarEmpleado(pruebaDTO.getLegajo_empleado());
-
+        Optional<Prueba> pruebaOptional = pruebaReposotory.findById(pruebaDTO.getId());
+        if(pruebaOptional.isPresent()){
+            Prueba prueba = pruebaOptional.get();
+            prueba.setFechaHoraFin(LocalDateTime.now());
+            prueba.setComentarios(pruebaDTO.getComentarios());
+            pruebaReposotory.save(prueba);
+            return new PruebaDTO(prueba);
+        }
+        return new PruebaDTO();
         //interesado
 
 
         //-------------------------------------------------------------
-
-        Prueba prueba = pruebaReposotory.findById(pid).orElseThrow(
-                () -> new ResourceNotFoundException(String.format("Prueba [%d] inexistente", pid))
-        );
-
-       prueba.setComentarios(pruebaDTO.getComentarios());
-       prueba.setInteresado(interesado);
-       prueba.setEmpleado(empleado);
-       prueba.setFechaHoraFin(pruebaDTO.getFechaHoraFin());
-       prueba.setFechaHoraInicio(pruebaDTO.getFechaHoraInicio());
-
-        return new PruebaDTO(prueba);
     }
 
     public boolean deleteById(Integer pid) {
