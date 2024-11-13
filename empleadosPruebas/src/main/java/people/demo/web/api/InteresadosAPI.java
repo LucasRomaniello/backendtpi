@@ -2,6 +2,7 @@ package people.demo.web.api;
 
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,8 +41,8 @@ public class InteresadosAPI {
     }
 
     @PostMapping
-    public ResponseEntity<InteresadoDTO> addInteresado(@RequestBody @Valid InteresadoDTO InteresadoDTO) {
-        return new ResponseEntity<>(interesadosService.add(InteresadoDTO), HttpStatus.CREATED);
+    public ResponseEntity<InteresadoDTO> addInteresado(@RequestBody @Valid InteresadoDTO interesadoDTO) {
+        return new ResponseEntity<>(interesadosService.add(interesadoDTO), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")

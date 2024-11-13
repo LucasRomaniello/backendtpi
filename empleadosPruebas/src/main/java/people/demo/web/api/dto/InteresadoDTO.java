@@ -1,6 +1,7 @@
 package people.demo.web.api.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import people.demo.domain.Interesado;
@@ -11,7 +12,7 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 public class InteresadoDTO {
-    @NotBlank(message = "Debe ingresar el ID obligatoriamente")
+    //@NotBlank(message = "Debe ingresar el ID obligatoriamente")
     private Integer id;
 
     private String tipo_documento;
@@ -44,6 +45,7 @@ public class InteresadoDTO {
         Interesado interesado = new Interesado(); // podria dar problemas en update? La va a intentar guardar a la nueva entidad en la bda.
         interesado.setId(interesadoDTO.getId());
         interesado.setDocumento(interesadoDTO.getDocumento());
+        interesado.setTipo_documento(interesadoDTO.getTipo_documento());
         interesado.setNombre(interesadoDTO.getNombre());
         interesado.setNro_licencia(interesadoDTO.getNro_licencia());
         interesado.setRestringido(interesadoDTO.getRestringido());

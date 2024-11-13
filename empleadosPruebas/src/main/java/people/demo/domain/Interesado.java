@@ -1,9 +1,6 @@
 package people.demo.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,19 +19,19 @@ import java.util.Set;
 public class Interesado {
     @Id
     private Integer id;
-
+    @Column(name = "tipo_documento")
     private String tipo_documento;
-
+    @Column(name = "documento")
     private String documento;
-
+    @Column(name = "nombre")
     private String nombre;
-
+    @Column(name = "apellido")
     private String apellido;
-
+    @Column(name = "restringido")
     private Boolean restringido;
-
+    @Column(name = "nro_licencia")
     private Integer nro_licencia;
-
+    @Column(name = "fecha_vencimiento_licencia")
     private Date fecha_vencimiento_licencia;
 
     @OneToMany(mappedBy = "interesado")
