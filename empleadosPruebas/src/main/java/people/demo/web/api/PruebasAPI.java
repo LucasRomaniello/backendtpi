@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.*;
 import people.demo.web.api.dto.PruebaDTO;
 import people.demo.web.service.PruebasService;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,6 +32,15 @@ public class PruebasAPI {
                 : ResponseEntity.ok(pruebaDTOS);
     }
 
+    @GetMapping("/enCurso")
+    public ResponseEntity<List<PruebaDTO>> findPruebasEnCurso() {
+        List<PruebaDTO> pruebaDTOS = pruebasService.findAllWithFechaFinIsNull();
+        return pruebaDTOS.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(pruebaDTOS);
+    }
+
+
     @GetMapping("/{id}")
     public ResponseEntity<PruebaDTO> findPrueba(@PathVariable Integer id) {
         Optional<PruebaDTO> PruebaDTO = pruebasService.findById(id);
@@ -41,6 +52,8 @@ public class PruebasAPI {
 
     @PostMapping
     public ResponseEntity<PruebaDTO> addPrueba(@RequestBody @Valid PruebaDTO pruebaDTO) {
+        pruebaDTO.setFechaHoraInicio(LocalDateTime.now());
+
         return new ResponseEntity<>(pruebasService.add(pruebaDTO), HttpStatus.CREATED);
     }
 

@@ -28,25 +28,27 @@ public class PruebaDTO {
 
     private String comentarios;
 
+    public PruebaDTO(Prueba prueba){
+        this.id = prueba.getId();
+        this.id_interesado = prueba.getInteresado().getId();
+        this.id_vehiculo = prueba.getId_vehiculo();
+        this.legajo_empleado = prueba.getEmpleado().getLegajo();
+        this.fechaHoraInicio = prueba.getFechaHoraInicio();
+        this.comentarios = prueba.getComentarios();
+    }
+
     public PruebaDTO() {}
 
-//    public PruebaDTO(Prueba prueba){
-//        this.id = prueba.getId();
-//        this.id_interesado = prueba.getInteresado().getId();
-//        this.id_vehiculo = prueba.getId_vehiculo();
-//        this.legajo_empleado = prueba.getEmpleado().getLegajo();
-//        this.fechaHoraInicio = LocalDateTime.now();
-//        this.comentarios = prueba.getComentarios();
-//    }
 
-    public PruebaDTO(String comentarios,Integer idVehiculo, Integer legajo_empleado, Integer id_interesado, Integer id) {
-        this.comentarios = comentarios;
-        this.fechaHoraInicio = LocalDateTime.now();
-        this.id_vehiculo = idVehiculo;
-        this.legajo_empleado = legajo_empleado;
-        this.id_interesado = id_interesado;
-        this.id = id;
-    }
+
+//    public PruebaDTO(String comentarios,Integer idVehiculo, Integer legajo_empleado, Integer id_interesado, Integer id) {
+//        this.comentarios = comentarios;
+//        this.fechaHoraInicio = LocalDateTime.now();
+//        this.id_vehiculo = idVehiculo;
+//        this.legajo_empleado = legajo_empleado;
+//        this.id_interesado = id_interesado;
+//        this.id = id;
+//    }
 
 
     public static PruebaDTO toDTO(Prueba prueba) {
@@ -55,11 +57,23 @@ public class PruebaDTO {
         return new PruebaDTO(prueba);
     }
 
-    public static Prueba toEntity(PruebaDTO pruebaDTO, Interesado interesado, Empleado empleado) {
-        if (pruebaDTO == null) return null;
-        return new Prueba(pruebaDTO.getId(), interesado, empleado, pruebaDTO.getFechaHoraInicio(),null, pruebaDTO.getComentarios(), pruebaDTO.getId_vehiculo());
-    }
+//    public static Prueba toEntity(PruebaDTO pruebaDTO, Interesado interesado, Empleado empleado) {
+//        if (pruebaDTO == null) return null;
+//        return new Prueba(pruebaDTO.getId(), interesado, empleado, pruebaDTO.getFechaHoraInicio(),null, pruebaDTO.getComentarios(), pruebaDTO.getId_vehiculo());
+//    }
 
+    public static Prueba toEntity(PruebaDTO pruebaDTO, Interesado interesado, Empleado empleado) {
+        Prueba prueba = new Prueba();
+        prueba.setId(pruebaDTO.getId());
+        prueba.setInteresado(interesado);
+        prueba.setEmpleado(empleado);
+        prueba.setFechaHoraInicio(pruebaDTO.getFechaHoraInicio());
+        prueba.setFechaHoraFin(null);
+        prueba.setComentarios(pruebaDTO.getComentarios());
+        prueba.setId_vehiculo(pruebaDTO.getId_vehiculo());
+        return prueba;
+
+    }
     //public static PruebaDTO toDTO(Prueba prueba) {
        // if (prueba == null) return null;
 

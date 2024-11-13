@@ -42,15 +42,12 @@ public class PruebasService {
 
         Optional<Interesado> interesadoOpt = interesadoRepository.findById(pruebaDTO.getId_interesado());
         Optional<Empleado> empleadoOpt = empleadoRepository.findById(pruebaDTO.getLegajo_empleado());
-        Optional<Prueba> pruebas = pruebaReposotory.findByIdVehiculoAndFechaHoraFinIsNull(pruebaDTO.getId_vehiculo());
+        Optional<Prueba> pruebas = pruebaReposotory.findAllWithFechaHoraFinIsNull(pruebaDTO.getId_vehiculo());
         //interesado
 
         Interesado interesado = interesadoOpt.get(); // Lanza excepción si está vacío
         Empleado empleado = empleadoOpt.get();
 
-        System.out.println(interesado.verificarLicencia());
-        System.out.println(interesado.getRestringido());
-        System.out.println(pruebas.isEmpty());
         if(interesado.verificarLicencia() && ! interesado.getRestringido() &&  pruebas.isEmpty()){
             pruebaReposotory.save(pruebaDTO.toEntity(pruebaDTO, interesado, empleado));
             return pruebaDTO;
@@ -82,6 +79,16 @@ public class PruebasService {
 
         return pruebas.stream().map(PruebaDTO::new).toList();
     }
+
+
+    public List<PruebaDTO> findAllWithFechaFinIsNull(){
+        List<Prueba> listPrueba = pruebaReposotory.findAllWithFechaHoraFinIsNull();
+        return listPrueba.stream().map(PruebaDTO::new).toList();
+
+    }
+
+
+
 
     public PruebaDTO update (Integer pid, PruebaDTO pruebaDTO){
 
