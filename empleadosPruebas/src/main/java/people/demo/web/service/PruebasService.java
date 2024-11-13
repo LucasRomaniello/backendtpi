@@ -42,12 +42,23 @@ public class PruebasService {
 
         Optional<Interesado> interesadoOpt = interesadoRepository.findById(pruebaDTO.getId_interesado());
         Optional<Empleado> empleadoOpt = empleadoRepository.findById(pruebaDTO.getLegajo_empleado());
+        Optional<Prueba> pruebas = pruebaReposotory.findByIdVehiculoAndFechaHoraFinIsNull(pruebaDTO.getId_vehiculo());
         //interesado
 
         Interesado interesado = interesadoOpt.get(); // Lanza excepción si está vacío
         Empleado empleado = empleadoOpt.get();
-        Prueba prueba = pruebaReposotory.save(PruebaDTO.toEntity(pruebaDTO, interesado, empleado)); //Interesado to entity viola la ley de demeter
-        return new PruebaDTO(prueba);
+
+        System.out.println(interesado.verificarLicencia());
+        System.out.println(interesado.getRestringido());
+        System.out.println(pruebas.isEmpty());
+        if(interesado.verificarLicencia() && ! interesado.getRestringido() &&  pruebas.isEmpty()){
+            pruebaReposotory.save(pruebaDTO.toEntity(pruebaDTO, interesado, empleado));
+            return pruebaDTO;
+        }
+        else {
+            return new PruebaDTO();
+        }
+
     }
 
     public Interesado buscarInteresado(int id){

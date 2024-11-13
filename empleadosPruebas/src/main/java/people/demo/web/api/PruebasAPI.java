@@ -40,8 +40,8 @@ public class PruebasAPI {
     }
 
     @PostMapping
-    public ResponseEntity<PruebaDTO> addPrueba(@RequestBody @Valid PruebaDTO PruebaDTO) {
-        return new ResponseEntity<>(pruebasService.add(PruebaDTO), HttpStatus.CREATED);
+    public ResponseEntity<PruebaDTO> addPrueba(@RequestBody @Valid PruebaDTO pruebaDTO) {
+        return new ResponseEntity<>(pruebasService.add(pruebaDTO), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")

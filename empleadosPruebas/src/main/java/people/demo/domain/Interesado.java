@@ -66,4 +66,14 @@ public class Interesado {
         //this.pruebas = empleado.pruebas;
         return this;
     }
+
+    public boolean verificarLicencia(){
+        Date fechaActual = new Date();
+
+        if (fecha_vencimiento_licencia.after(fechaActual)) {
+            return true;
+        }
+        return false;
+    }
+
 }
