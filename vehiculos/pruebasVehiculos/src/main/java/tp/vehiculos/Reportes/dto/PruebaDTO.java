@@ -1,6 +1,8 @@
 package tp.vehiculos.Reportes.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
+
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
@@ -8,6 +10,7 @@ import java.time.ZoneId;
 
 import java.util.Date;
 
+@Data
 public class PruebaDTO {
     private Integer id;
 
@@ -33,6 +36,10 @@ public class PruebaDTO {
         this.id = id;
     }
 
+
+    public Integer getId() {
+        return id;
+    }
 
     public LocalDateTime getFechaInicio() {
 

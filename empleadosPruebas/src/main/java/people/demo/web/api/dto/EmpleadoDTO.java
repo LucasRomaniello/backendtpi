@@ -10,7 +10,7 @@ import people.demo.domain.Empleado;
 @AllArgsConstructor
 @NoArgsConstructor
 public class EmpleadoDTO {
-    @NotBlank(message = "Debe ingresar el Legajo obligatoriamente")
+    //@NotBlank(message = "Debe ingresar el Legajo obligatoriamente")
     private Integer legajo;
 
     private String nombre;

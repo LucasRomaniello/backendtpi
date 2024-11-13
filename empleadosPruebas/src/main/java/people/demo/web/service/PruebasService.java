@@ -82,14 +82,16 @@ public class PruebasService {
 
 
     public List<PruebaDTO> findAllWithFechaFinIsNull(){
-        List<Prueba> listPrueba = pruebaRepository.findPruebaActual();
+        List<Prueba> listPrueba = pruebaRepository.findPruebaEnCurso();
         return listPrueba.stream().map(PruebaDTO::new).toList();
 
     }
 
+    public Optional<PruebaDTO> findPruebaByIdVehiculo(Integer idVehiculo){
+        Optional<Prueba> optPrueba = pruebaRepository.findPruebaActual(idVehiculo);
 
-
-
+        return optPrueba.stream().map(PruebaDTO::new).toList().stream().findFirst();
+    }
 
 
     public PruebaDTO update (PruebaDTO pruebaDTO){

@@ -1,6 +1,7 @@
 package tp.vehiculos.vehiculos.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import tp.vehiculos.vehiculos.configurations.Geolocalizacion;
@@ -32,26 +33,32 @@ public class PosicionService {
 
     public void procesarPosicion(PosicionDto posicionDto){
         Optional<Vehiculo> vehiculo = serviceVehiculos.getVehiculoById(posicionDto.getIdVehiculo());
-        // TIENE QUE ESTAR EN PRUEBA EL VEHICULO
-        if (vehiculo.isPresent()) {
-            Posicion posicion = new Posicion(vehiculo.get(), posicionDto.getLatitud(), posicionDto.getLongitud());
-            ConfiguracionAgencia agencia = serviceConfiguracion.obtenerConfiguration();
-            boolean necesarioNotificar = agencia.asegurarCumplimientoNormas(posicion);
-            guardarPosicion(posicion);
+        Optional<Prueba> pruebaOptional = restTemplate.getForObject()
 
-            if (necesarioNotificar){ //Descomentar lo que esta abajo para notificar
-                //ResponseEntity<Void> response = restTemplate.postForEntity(API_URL, posicion.toDto(), Void.class);
+        if(){
+            if (vehiculo.isPresent()) {
+                Posicion posicion = new Posicion(vehiculo.get(), posicionDto.getLatitud(), posicionDto.getLongitud());
+                ConfiguracionAgencia agencia = serviceConfiguracion.obtenerConfiguration();
+                boolean necesarioNotificar = agencia.asegurarCumplimientoNormas(posicion);
+                guardarPosicion(posicion);
+
+                if (necesarioNotificar){ //Descomentar lo que esta abajo para notificar
+                    ResponseEntity<Void> response = restTemplate.postForEntity(API_URL, posicion.toDto(), Void.class);
 
 
-            }else{
-                //System.out.println("No enviar notificacion");
+                }else{
+                    System.out.println("No enviar notificacion");
+                }
+
+
+
+            } else {
+                System.out.println("Vehículo no encontrado con ID: " + posicionDto.getIdVehiculo());
             }
 
-
-
-        } else {
-            System.out.println("Vehículo no encontrado con ID: " + posicionDto.getIdVehiculo());
         }
+
+
     }
 
     public double calcularCantidadKm(LocalDateTime fechaInicio, LocalDateTime fechaFin, int idVehiculo){

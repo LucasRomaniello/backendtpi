@@ -2,6 +2,7 @@ package people.demo.web.api;
 
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +31,15 @@ public class PruebasAPI {
                 ? ResponseEntity.noContent().build()
                 : ResponseEntity.ok(pruebaDTOS);
     }
+
+    @GetMapping("/pruebaActual/{id}")
+    public ResponseEntity<Optional<PruebaDTO>> findPruebaByIdVehiculo( @PathVariable Integer id) {
+        Optional<PruebaDTO> pruebaDTO = pruebasService.findPruebaByIdVehiculo(id);
+        return pruebaDTO.isEmpty()
+                ? ResponseEntity.notFound().build()
+                : ResponseEntity.ok(pruebaDTO);
+    }
+
 
     @GetMapping("/enCurso")
     public ResponseEntity<List<PruebaDTO>> findPruebasEnCurso() {

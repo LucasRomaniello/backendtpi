@@ -16,7 +16,7 @@ public interface PruebaRepository extends JpaRepository<Prueba, Integer> {
 
 
     @Query("SELECT p FROM Prueba p WHERE p.fechaHoraFin IS NULL")
-    List<Prueba> findPruebaActual();
+    List<Prueba> findPruebaEnCurso();
 
     Optional<Prueba> findById(Integer id);
 

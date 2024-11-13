@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import tp.vehiculos.Reportes.dto.EmpleadoDTO;
+import tp.vehiculos.Reportes.dto.InteresadoDTO;
 import tp.vehiculos.Reportes.dto.PruebaDTO;
 import tp.vehiculos.vehiculos.models.Marca;
 import tp.vehiculos.vehiculos.models.Modelo;
@@ -29,34 +31,11 @@ public class ServiceReports {
 
     private final PosicionService posicionService;
     private final RestTemplate restTemplate;
-    private static final String APIPRUEBAS = "http://localhost:8083/pruebas";
-    private static final String APIPRUEBAEMPLEADO = "http://localhost:8083/pruebasEmpleado";
+    private static final String APIPRUEBAS = "http://localhost:8001/pruebas";
+    private static final String APIPRUEBAEMPLEADO = "http://localhost:8001/empleados";
+    private static final String APIPRUEBAINTERESADO = "http://localhost:8001/interesados";
     private final String filePath = "C:/Users/Gonzalo/Desktop/backendtpi/vehiculos/pruebasVehiculos/";
 
-    //BORRAR DESDE ACA
-    private static List<PruebaDTO> pruebaDTOS = new ArrayList<>();
-    private static final Date fechaInicio2023;
-    private static final Date fechaFin2025;
-
-
-
-    static {
-        Calendar cal = Calendar.getInstance();
-
-        // Fecha de inicio: 7 de noviembre de 2023
-        cal.set(2023, Calendar.NOVEMBER, 7);
-        fechaInicio2023 = cal.getTime();
-
-        // Fecha de fin: 7 de noviembre de 2025
-        cal.set(2025, Calendar.NOVEMBER, 7);
-        fechaFin2025 = cal.getTime();
-    }
-
-
-    private static final PruebaDTO prueba1 = new PruebaDTO("ok", fechaInicio2023, fechaFin2025, 1, 3, 4, 7);
-    private static final PruebaDTO prueba2 = new PruebaDTO("ok", fechaInicio2023, fechaFin2025, 2, 3, 2, 8);
-    private static final PruebaDTO prueba3 = new PruebaDTO("ok", fechaInicio2023, fechaFin2025, 1, 4, 1, 9);
-    //HASTA ACA */
 
     @Autowired
     public ServiceReports(RestTemplate restTemplate, PosicionService posicionService) {
@@ -66,14 +45,11 @@ public class ServiceReports {
 
     public void generarReporteIncidentes(){
 
-        //List<PruebaDTO> pruebas = restTemplate.getForObject(APIPRUEBAS, List.class);
-        pruebaDTOS.add(prueba1); //DESPUES BORRAR
-        pruebaDTOS.add(prueba2); //DESPUES BORRAR
-        pruebaDTOS.add(prueba3); //DESPUES BORRAR
+        List<PruebaDTO> pruebas = restTemplate.getForObject(APIPRUEBAS, List.class);
         List<Posicion> incidenList = new ArrayList<>();
 
 
-        for (PruebaDTO pruebaDTO : pruebaDTOS) {
+        for (PruebaDTO pruebaDTO : pruebas) {
             Optional<Posicion> incidente = posicionService.obtenerEntreFechasIncidente(pruebaDTO.getFechaFin(), pruebaDTO.getFechaInicio(), pruebaDTO.getIdVehiculo());
             if(incidente.isPresent()){
                 incidenList.add(incidente.get());
@@ -156,5 +132,30 @@ public class ServiceReports {
 
     }
 
+    public void generarReportePruebasDetalle() {
+        List<PruebaDTO> pruebas = restTemplate.getForObject(APIPRUEBAS, List.class);
 
+        String fileName = "reportePruebasConDetalle.csv";
+        File file = new File(filePath + fileName);
+        try (PrintWriter printWriter = new PrintWriter(file)) {
+            pruebas.forEach(prueba -> {
+
+                EmpleadoDTO empleadoDTO = restTemplate.getForObject(APIPRUEBAEMPLEADO + "/" + prueba.getLegajo_empleado(), EmpleadoDTO.class);
+                InteresadoDTO interesadoDTO = restTemplate.getForObject(APIPRUEBAINTERESADO + "/" + prueba.getId_interesado(), InteresadoDTO.class);
+                printWriter.println(
+                        "- Prueba: " + prueba.getId() + "\n " +
+                                "Fecha Inicio: " + prueba.getFechaInicio() + "Fecha Fin: " + prueba.getFechaFin() + "\n"
+                                + "Interesado: " + interesadoDTO.getApellido() + " " + interesadoDTO.getNombre() +
+                                "Identidad: " + interesadoDTO.getDocumento() + "Licencia: " + interesadoDTO.getNro_licencia() + "\n"
+                                + "Empleado a cargo " + empleadoDTO.getApellido() + " " + empleadoDTO.getNombre() + "Telefono: " + empleadoDTO.getTelefonoContacto()
+
+
+                );  });
+
+
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+  }
+
+    }
 }
