@@ -28,6 +28,7 @@ public class InteresadoDTO {
     private Integer nro_licencia;
 
     private Date fecha_vencimiento_licencia;
+    private String email;
 
     public InteresadoDTO(Interesado entity){
         id = entity.getId();
@@ -38,6 +39,7 @@ public class InteresadoDTO {
         restringido = entity.getRestringido();
         nro_licencia =entity.getNro_licencia();
         fecha_vencimiento_licencia = entity.getFecha_vencimiento_licencia();
+        email = entity.getEmail();
     }
     public Interesado toEntity(InteresadoDTO interesadoDTO) {
         if (interesadoDTO == null) return null;
@@ -51,6 +53,8 @@ public class InteresadoDTO {
         interesado.setRestringido(interesadoDTO.getRestringido());
         interesado.setApellido(interesadoDTO.getApellido());
         interesado.setFecha_vencimiento_licencia(interesadoDTO.getFecha_vencimiento_licencia());
+        interesado.setEmail(interesadoDTO.getEmail());
+
         return interesado;
     }
 }

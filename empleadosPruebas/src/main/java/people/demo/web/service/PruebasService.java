@@ -4,12 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import people.demo.dal.EmpleadoRepository;
 import people.demo.dal.InteresadoRepository;
-import people.demo.dal.PruebaReposotory;
+import people.demo.dal.PruebaRepository;
 import people.demo.domain.Empleado;
 import people.demo.domain.Interesado;
 import people.demo.domain.Prueba;
 import people.demo.web.api.dto.PruebaDTO;
-import people.demo.web.api.exception.ResourceNotFoundException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,22 +16,22 @@ import java.util.Optional;
 
 @Service
 public class PruebasService {
-    private final PruebaReposotory pruebaReposotory;
+    private final PruebaRepository pruebaRepository;
     private final InteresadoRepository interesadoRepository;
     private final EmpleadoRepository empleadoRepository;
     @Autowired
-    public PruebasService(PruebaReposotory pruebaReposotoryosotory, InteresadoRepository interesadoRepository, EmpleadoRepository empleadoRepository){
-        this.pruebaReposotory = pruebaReposotoryosotory;
+    public PruebasService(PruebaRepository pruebaReposotoryosotory, InteresadoRepository interesadoRepository, EmpleadoRepository empleadoRepository){
+        this.pruebaRepository = pruebaReposotoryosotory;
         this.interesadoRepository = interesadoRepository;
         this.empleadoRepository = empleadoRepository;
     }
 
     public List<PruebaDTO> findAll(){
-        return pruebaReposotory.findAll().stream().map(PruebaDTO::new).toList();
+        return pruebaRepository.findAll().stream().map(PruebaDTO::new).toList();
     }
 
     public Optional<PruebaDTO> findById(Integer pid) {
-        Optional<Prueba> prueba = pruebaReposotory.findById(pid);
+        Optional<Prueba> prueba = pruebaRepository.findById(pid);
 
         return prueba.isEmpty()
                 ? Optional.empty()
@@ -43,14 +42,14 @@ public class PruebasService {
 
         Optional<Interesado> interesadoOpt = interesadoRepository.findById(pruebaDTO.getId_interesado());
         Optional<Empleado> empleadoOpt = empleadoRepository.findById(pruebaDTO.getLegajo_empleado());
-        Optional<Prueba> pruebas = pruebaReposotory.findAllWithFechaHoraFinIsNull(pruebaDTO.getId_vehiculo());
+        Optional<Prueba> pruebas = pruebaRepository.findPruebaActual(pruebaDTO.getId_vehiculo());
         //interesado
 
         Interesado interesado = interesadoOpt.get(); // Lanza excepción si está vacío
         Empleado empleado = empleadoOpt.get();
 
         if(interesado.verificarLicencia() && ! interesado.getRestringido() &&  pruebas.isEmpty()){
-            pruebaReposotory.save(pruebaDTO.toEntity(pruebaDTO, interesado, empleado));
+            pruebaRepository.save(pruebaDTO.toEntity(pruebaDTO, interesado, empleado));
             return pruebaDTO;
         }
         else {
@@ -71,7 +70,7 @@ public class PruebasService {
 
     public List<PruebaDTO> addAll(List<PruebaDTO> pruebaDTOS) {
 
-        List<Prueba> pruebas = pruebaReposotory.saveAll(
+        List<Prueba> pruebas = pruebaRepository.saveAll(
                 pruebaDTOS.stream()
                         .map(pruebaDTO -> PruebaDTO.toEntity(pruebaDTO, buscarInteresado(pruebaDTO.getId_interesado()),
                                 buscarEmpleado(pruebaDTO.getLegajo_empleado())))
@@ -83,7 +82,7 @@ public class PruebasService {
 
 
     public List<PruebaDTO> findAllWithFechaFinIsNull(){
-        List<Prueba> listPrueba = pruebaReposotory.findAllWithFechaHoraFinIsNull();
+        List<Prueba> listPrueba = pruebaRepository.findPruebaActual();
         return listPrueba.stream().map(PruebaDTO::new).toList();
 
     }
@@ -98,12 +97,12 @@ public class PruebasService {
         //REVISAR----------------------------------------------------
         Interesado interesado = buscarInteresado(pruebaDTO.getId_interesado());
         Empleado empleado = buscarEmpleado(pruebaDTO.getLegajo_empleado());
-        Optional<Prueba> pruebaOptional = pruebaReposotory.findById(pruebaDTO.getId());
+        Optional<Prueba> pruebaOptional = pruebaRepository.findById(pruebaDTO.getId());
         if(pruebaOptional.isPresent()){
             Prueba prueba = pruebaOptional.get();
             prueba.setFechaHoraFin(LocalDateTime.now());
             prueba.setComentarios(pruebaDTO.getComentarios());
-            pruebaReposotory.save(prueba);
+            pruebaRepository.save(prueba);
             return new PruebaDTO(prueba);
         }
         return new PruebaDTO();
@@ -114,11 +113,11 @@ public class PruebasService {
     }
 
     public boolean deleteById(Integer pid) {
-        if (!pruebaReposotory.existsById(pid)) {
+        if (!pruebaRepository.existsById(pid)) {
             return false;
         }
 
-        pruebaReposotory.deleteById(pid);
+        pruebaRepository.deleteById(pid);
         return true;
     }
 }

@@ -33,6 +33,8 @@ public class Interesado {
     private Integer nro_licencia;
     @Column(name = "fecha_vencimiento_licencia")
     private Date fecha_vencimiento_licencia;
+    @Column(name="Email")
+    private String email;
 
     @OneToMany(mappedBy = "interesado")
     private Set<Prueba> pruebas = new HashSet<>();
@@ -52,6 +54,7 @@ public class Interesado {
         this.restringido = restringido;
         this.nro_licencia = nro_licencia;
         this.fecha_vencimiento_licencia = fecha_vencimiento_licencia;
+        this.email = Interesado.this.email;
     }
 
     public Interesado update(Interesado interesado) {
@@ -63,6 +66,7 @@ public class Interesado {
         restringido = interesado.restringido;
         nro_licencia = interesado.nro_licencia;
         fecha_vencimiento_licencia = interesado.fecha_vencimiento_licencia;
+        email = interesado.email;
         //this.pruebas = empleado.pruebas;
         return this;
     }
