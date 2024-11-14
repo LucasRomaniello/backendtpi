@@ -27,8 +27,6 @@ public class Prueba {
     @JoinColumn(name = "ID_EMPLEADO")
     Empleado empleado;
 
-
-
     @Basic @Column(name = "FECHA_HORA_INICIO")
     private LocalDateTime fechaHoraInicio;
 

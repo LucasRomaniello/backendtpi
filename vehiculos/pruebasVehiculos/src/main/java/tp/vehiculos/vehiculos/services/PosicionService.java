@@ -43,10 +43,9 @@ public class PosicionService {
                 ConfiguracionAgencia agencia = serviceConfiguracion.obtenerConfiguration();
                 boolean necesarioNotificar = agencia.asegurarCumplimientoNormas(posicion);
                 guardarPosicion(posicion);
-
                 if (necesarioNotificar){ //Descomentar lo que esta abajo para notificar
-                    // ResponseEntity<Void> response = restTemplate.postForEntity(API_URL, posicion.toDto(), Void.class);
 
+                    ResponseEntity<Void> response = restTemplate.postForEntity(API_URL, posicion.toDto(), Void.class);
 
                 }else{
                     System.out.println("No enviar notificacion");

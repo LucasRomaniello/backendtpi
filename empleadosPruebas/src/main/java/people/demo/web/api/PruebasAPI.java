@@ -62,6 +62,10 @@ public class PruebasAPI {
     @PostMapping
     public ResponseEntity<PruebaDTO> addPrueba(@RequestBody @Valid PruebaDTO pruebaDTO) {
         pruebaDTO.setFechaHoraInicio(LocalDateTime.now());
+        //Si esta prueba al momento de hacer el post por medio de postman te vuelve todo null
+        //Es porque tener un empleado en una prueba actual o bien el interesado esta restringido
+        //O porque el vehiculo esta en uso o bien el carnet del interesado esta vencidoç
+        //Fijarse en la base de datos
 
         return new ResponseEntity<>(pruebasService.add(pruebaDTO), HttpStatus.CREATED);
     }

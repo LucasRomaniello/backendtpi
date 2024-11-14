@@ -43,16 +43,15 @@ public class PruebasService {
         Optional<Interesado> interesadoOpt = interesadoRepository.findById(pruebaDTO.getId_interesado());
         Optional<Empleado> empleadoOpt = empleadoRepository.findById(pruebaDTO.getLegajo_empleado());
         Optional<Prueba> pruebas = pruebaRepository.findPruebaActual(pruebaDTO.getId_vehiculo());
-
-
-
         //interesado
 
         Interesado interesado = interesadoOpt.get(); // Lanza excepción si está vacío
         Empleado empleado = empleadoOpt.get();
         Optional<Prueba> pruebaEmpleado = pruebaRepository.findPruebaActualEmpleado(empleado.getLegajo());
 
+        //
         if(interesado.verificarLicencia() && ! interesado.getRestringido() &&  pruebas.isEmpty() && pruebaEmpleado.isEmpty()){
+
             pruebaRepository.save(pruebaDTO.toEntity(pruebaDTO, interesado, empleado));
             return pruebaDTO;
         }
