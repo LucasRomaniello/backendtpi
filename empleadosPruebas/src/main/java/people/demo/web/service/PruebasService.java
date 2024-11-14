@@ -30,6 +30,12 @@ public class PruebasService {
         return pruebaRepository.findAll().stream().map(PruebaDTO::new).toList();
     }
 
+    //Obtener todas las pruebas finalizadas
+    public List<PruebaDTO> findAllFinalizadas(){
+        return pruebaRepository.findPruebaFinaliza().stream().map(PruebaDTO::new).toList();
+
+    }
+
     public Optional<PruebaDTO> findById(Integer pid) {
         Optional<Prueba> prueba = pruebaRepository.findById(pid);
 
@@ -51,7 +57,6 @@ public class PruebasService {
 
         //
         if(interesado.verificarLicencia() && ! interesado.getRestringido() &&  pruebas.isEmpty() && pruebaEmpleado.isEmpty()){
-
             pruebaRepository.save(pruebaDTO.toEntity(pruebaDTO, interesado, empleado));
             return pruebaDTO;
         }
@@ -97,6 +102,8 @@ public class PruebasService {
     }
 
 
+
+    //Finalizar una prueba ya comenzada
     public PruebaDTO update (PruebaDTO pruebaDTO){
 
         //REVISAR----------------------------------------------------

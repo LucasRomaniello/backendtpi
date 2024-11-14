@@ -13,6 +13,7 @@ import lombok.ToString;
 
 public class Notificacion {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     private int idVehiculo;

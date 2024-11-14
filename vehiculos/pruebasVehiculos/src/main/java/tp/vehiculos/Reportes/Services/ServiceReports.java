@@ -31,7 +31,7 @@ public class ServiceReports {
 
     private final PosicionService posicionService;
     private final RestTemplate restTemplate;
-    private static final String APIPRUEBAS = "http://localhost:8001/pruebas";
+    private static final String APIPRUEBAS = "http://localhost:8001/pruebas/finalizadas";
     private static final String APIPRUEBAEMPLEADO = "http://localhost:8001/empleados";
     private static final String APIPRUEBAINTERESADO = "http://localhost:8001/interesados";
     private final String filePath = "C:/Users/Gonzalo/Desktop/backendtpi/vehiculos/pruebasVehiculos/";
@@ -47,6 +47,7 @@ public class ServiceReports {
 
         List<PruebaDTO> pruebas = restTemplate.getForObject(APIPRUEBAS, List.class);
         List<Posicion> incidenList = new ArrayList<>();
+
 
 
         for (PruebaDTO pruebaDTO : pruebas) {
@@ -65,8 +66,6 @@ public class ServiceReports {
                 String tipoIncidente = "";
                 if(inc.estaFueraDeRadio()){tipoIncidente = "Salió del radio permitido";
                 }else{tipoIncidente= "Entró a zona peligrosa";}
-
-
                 printWriter.println(String.format("%s,%s,%s,%s,%s",
                         tipoIncidente,
                         inc.getVehiculo().getPatente(),

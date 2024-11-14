@@ -32,6 +32,15 @@ public class PruebasAPI {
                 : ResponseEntity.ok(pruebaDTOS);
     }
 
+    //Api para obtener todas las pruebas finalizadas
+    @GetMapping("/finalizadas")
+    public ResponseEntity<List<PruebaDTO>> findAllPruebasFinalizadas(){
+        List<PruebaDTO> pruebaDTOS = pruebasService.findAllFinalizadas();
+        return pruebaDTOS.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(pruebaDTOS);
+    }
+
     @GetMapping("/pruebaActual/{id}")
     public ResponseEntity<Optional<PruebaDTO>> findPruebaByIdVehiculo( @PathVariable Integer id) {
         Optional<PruebaDTO> pruebaDTO = pruebasService.findPruebaByIdVehiculo(id);

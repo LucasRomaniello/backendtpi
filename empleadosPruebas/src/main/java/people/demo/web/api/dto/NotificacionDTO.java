@@ -8,8 +8,6 @@ import people.demo.domain.Notificacion;
 @Getter
 public class NotificacionDTO {
 
-    //@NotBlank(message = "La notificacion debe tener un vehiculo asociado")
-    private int id_notificacion;
     private int id_vehiculo;
 
     private double latitud;
@@ -27,7 +25,6 @@ public class NotificacionDTO {
     public NotificacionDTO(){}
 
     public NotificacionDTO(Notificacion notificacion){
-        this.id_notificacion = notificacion.getId();
         this.id_vehiculo = notificacion.getIdVehiculo();
         this.latitud = notificacion.getLatitud();
         this.longitud = notificacion.getLongitud();
@@ -47,7 +44,7 @@ public class NotificacionDTO {
         if (notificacionDTO == null) return null;
 
         Notificacion notificacion = new Notificacion();
-        notificacion.setId(notificacionDTO.getId_notificacion());
+
         notificacion.setIdVehiculo(notificacionDTO.getId_vehiculo());
         notificacion.setLatitud(notificacionDTO.getLatitud());
         notificacion.setLongitud(notificacionDTO.getLongitud());

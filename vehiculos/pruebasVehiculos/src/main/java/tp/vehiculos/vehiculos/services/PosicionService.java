@@ -21,7 +21,7 @@ public class PosicionService {
     private final VehiculoService serviceVehiculos;
     private final ConfiguracionService serviceConfiguracion;
     private final PosicionRepository repository;
-    private static final String API_URL = "http://localhost:8001/notificarVehiculo/";
+    private static final String API_URL = "http://localhost:8001/notificarVehiculo";
     private static final String API_VEHICULO_EN_PRUEBA = "http://localhost:8001/pruebas/pruebaActual/";
     private final RestTemplate restTemplate;
 
@@ -34,7 +34,9 @@ public class PosicionService {
     }
 
     public void procesarPosicion(PosicionDto posicionDto){
-        Optional<Vehiculo> vehiculo = serviceVehiculos.getVehiculoById(posicionDto.getIdVehiculo());
+        Optional<Vehiculo> vehiculo = serviceVehiculos.getVehiculoById(posicionDto.getId_vehiculo());
+        //Ver si el vehiculo esta en una prueba acorde a su id
+        //Para resolver lo mencionado se realiza la consulta al otro microservicio con la API definida
         Optional<PruebaDTO> pruebaOptional = Optional.ofNullable(restTemplate.getForObject(API_VEHICULO_EN_PRUEBA + vehiculo.get().getId(), PruebaDTO.class));
 
         if(pruebaOptional.isPresent()){
@@ -44,17 +46,14 @@ public class PosicionService {
                 boolean necesarioNotificar = agencia.asegurarCumplimientoNormas(posicion);
                 guardarPosicion(posicion);
                 if (necesarioNotificar){ //Descomentar lo que esta abajo para notificar
-
+                    //Este envia una peticion al otro microservicio con el cuerpo de NOTIFICACIONDTO que coincide con POSICIONDTO
+                    //Y al momento de ejecutarse se guarda en la base de datos. El id de la notificacion es autoincremental
                     ResponseEntity<Void> response = restTemplate.postForEntity(API_URL, posicion.toDto(), Void.class);
-
                 }else{
                     System.out.println("No enviar notificacion");
                 }
-
-
-
             } else {
-                System.out.println("Vehículo no encontrado con ID: " + posicionDto.getIdVehiculo());
+                System.out.println("Vehículo no encontrado con ID: " + posicionDto.getId_vehiculo());
             }
 
         }
