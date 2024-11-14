@@ -1,6 +1,7 @@
 package people.demo.dal;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import people.demo.domain.Empleado;
 import people.demo.domain.Prueba;
 
 import org.springframework.data.jpa.repository.Query;
@@ -14,6 +15,9 @@ public interface PruebaRepository extends JpaRepository<Prueba, Integer> {
     @Query("SELECT p FROM Prueba p WHERE p.fechaHoraFin IS NULL AND p.id_vehiculo = :id_vehiculo")
     Optional<Prueba> findPruebaActual(@Param("id_vehiculo") Integer id_vehiculo);
 
+
+    @Query("SELECT p FROM Prueba p WHERE p.fechaHoraFin IS NULL AND p.empleado = :legajo_empleado")
+    Optional<Prueba> findPruebaActualEmpleado(@Param("legajo_empleado") Integer id_empleado);
 
     @Query("SELECT p FROM Prueba p WHERE p.fechaHoraFin IS NULL")
     List<Prueba> findPruebaEnCurso();

@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import tp.vehiculos.Reportes.dto.PruebaDTO;
 import tp.vehiculos.vehiculos.configurations.Geolocalizacion;
 import tp.vehiculos.vehiculos.dtos.PosicionDto;
 import tp.vehiculos.vehiculos.configurations.ConfiguracionAgencia;
@@ -20,7 +21,8 @@ public class PosicionService {
     private final VehiculoService serviceVehiculos;
     private final ConfiguracionService serviceConfiguracion;
     private final PosicionRepository repository;
-    private static final String API_URL = "http://localhost:8001/personas/notificarVehiculo/";
+    private static final String API_URL = "http://localhost:8001/notificarVehiculo/";
+    private static final String API_VEHICULO_EN_PRUEBA = "http://localhost:8001/pruebas/pruebaActual/";
     private final RestTemplate restTemplate;
 
     @Autowired
@@ -33,9 +35,9 @@ public class PosicionService {
 
     public void procesarPosicion(PosicionDto posicionDto){
         Optional<Vehiculo> vehiculo = serviceVehiculos.getVehiculoById(posicionDto.getIdVehiculo());
-        Optional<Prueba> pruebaOptional = restTemplate.getForObject()
+        Optional<PruebaDTO> pruebaOptional = Optional.ofNullable(restTemplate.getForObject(API_VEHICULO_EN_PRUEBA + vehiculo.get().getId(), PruebaDTO.class));
 
-        if(){
+        if(pruebaOptional.isPresent()){
             if (vehiculo.isPresent()) {
                 Posicion posicion = new Posicion(vehiculo.get(), posicionDto.getLatitud(), posicionDto.getLongitud());
                 ConfiguracionAgencia agencia = serviceConfiguracion.obtenerConfiguration();
@@ -43,7 +45,7 @@ public class PosicionService {
                 guardarPosicion(posicion);
 
                 if (necesarioNotificar){ //Descomentar lo que esta abajo para notificar
-                    ResponseEntity<Void> response = restTemplate.postForEntity(API_URL, posicion.toDto(), Void.class);
+                    // ResponseEntity<Void> response = restTemplate.postForEntity(API_URL, posicion.toDto(), Void.class);
 
 
                 }else{

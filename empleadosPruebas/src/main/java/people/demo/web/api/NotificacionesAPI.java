@@ -16,7 +16,6 @@ import people.demo.web.service.NotificacionService;
 public class NotificacionesAPI {
     private NotificacionService notificacionService;
 
-
     @Autowired
     public NotificacionesAPI(NotificacionService notificacionService) {
         this.notificacionService = notificacionService;
