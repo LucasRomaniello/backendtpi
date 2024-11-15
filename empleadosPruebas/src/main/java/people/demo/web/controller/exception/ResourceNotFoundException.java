@@ -1,4 +1,4 @@
-package people.demo.web.api.exception;
+package people.demo.web.controller.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -6,11 +6,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 /**
  *
  */
-@ResponseStatus(value = HttpStatus.NOT_FOUND)
 public class ResourceNotFoundException extends RuntimeException {
-    public ResourceNotFoundException() {
-        super();
-    }
     public ResourceNotFoundException(String message) {
         super(message);
     }

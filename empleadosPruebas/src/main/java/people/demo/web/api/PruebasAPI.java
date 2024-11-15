@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import people.demo.web.api.dto.PruebaDTO;
+import people.demo.web.controller.exception.ResourceNotFoundException;
 import people.demo.web.service.PruebasService;
 
 import java.time.LocalDateTime;
@@ -61,12 +62,15 @@ public class PruebasAPI {
 
     @GetMapping("/{id}")
     public ResponseEntity<PruebaDTO> findPrueba(@PathVariable Integer id) {
-        Optional<PruebaDTO> PruebaDTO = pruebasService.findById(id);
+        Optional<PruebaDTO> pruebaDTO = pruebasService.findById(id);
 
-        return PruebaDTO.isEmpty()
-                ? ResponseEntity.notFound().build()
-                : ResponseEntity.ok(PruebaDTO.get());
+        if (pruebaDTO.isEmpty()) {
+            throw new ResourceNotFoundException("No se ha encontrado prueba con ese id");
+        } else {
+            return ResponseEntity.ok(pruebaDTO.get());
+        }
     }
+
 
     @PostMapping
     public ResponseEntity<PruebaDTO> addPrueba(@RequestBody @Valid PruebaDTO pruebaDTO) {
@@ -79,11 +83,12 @@ public class PruebasAPI {
         return new ResponseEntity<>(pruebasService.add(pruebaDTO), HttpStatus.CREATED);
     }
 
-    @PutMapping("/")
+    @PutMapping("/{id}")
     public ResponseEntity<PruebaDTO> updatePrueba(
+            @PathVariable Integer id,
             @Valid @RequestBody PruebaDTO pruebaDTO
     ) {
-        return new ResponseEntity<>(pruebasService.update(pruebaDTO), HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(pruebasService.update(pruebaDTO, id), HttpStatus.ACCEPTED);
     }
 
     @DeleteMapping("/{id}")
