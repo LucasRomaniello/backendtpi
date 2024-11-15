@@ -1,5 +1,6 @@
 package ar.edu.utn.frc.bso.security.controllers;
 
+import ar.edu.utn.frc.bso.security.domain.Empleado;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,4 +25,8 @@ public class TestController {
         return "PONG-PRIVADO-EMPLEADO";
     }
 
+    @GetMapping(path = "/empleado/1")
+    public Empleado empleado(){
+        return new Empleado("Lucas", 20);
+    }
 }
