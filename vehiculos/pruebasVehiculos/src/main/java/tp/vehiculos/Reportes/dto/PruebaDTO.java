@@ -20,13 +20,13 @@ public class PruebaDTO {
 
     private Integer idVehiculo;
 
-    private Date fechaHoraInicio;
-    private Date fechaHoraFin;
+    private LocalDateTime fechaHoraInicio;
+    private LocalDateTime fechaHoraFin;
     
     private String comentarios;
 
 
-    public PruebaDTO(String comentarios, Date fechaHoraFin, Date fechaHoraInicio, Integer idVehiculo, Integer legajo_empleado, Integer id_interesado, Integer id) {
+    public PruebaDTO(String comentarios, LocalDateTime fechaHoraFin, LocalDateTime fechaHoraInicio, Integer idVehiculo, Integer legajo_empleado, Integer id_interesado, Integer id) {
         this.comentarios = comentarios;
         this.fechaHoraFin = fechaHoraFin;
         this.fechaHoraInicio = fechaHoraInicio;
@@ -43,11 +43,11 @@ public class PruebaDTO {
 
     public LocalDateTime getFechaInicio() {
 
-        return fechaHoraInicio.toInstant().atZone(ZoneId.systemDefault()) .toLocalDateTime(); 
+        return fechaHoraInicio;
     }
 
     public LocalDateTime getFechaFin() {
-        return fechaHoraFin.toInstant().atZone(ZoneId.systemDefault()) .toLocalDateTime(); 
+        return fechaHoraFin;
     }
 
     public int getIdVehiculo() {
