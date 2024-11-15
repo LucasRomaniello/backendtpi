@@ -22,4 +22,6 @@ public interface PosicionRepository extends JpaRepository<Posicion,Integer> {
                                      @Param("fechaFin") LocalDateTime fechaFin,
                                      @Param("idVehiculo") int idVehiculo);
 
+
+
 }
