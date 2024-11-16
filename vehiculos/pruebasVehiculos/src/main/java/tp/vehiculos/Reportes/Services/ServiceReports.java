@@ -8,7 +8,11 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -29,12 +33,13 @@ import static java.lang.String.format;
 @Service
 public class ServiceReports {
 
+    private static final Logger log = LoggerFactory.getLogger(ServiceReports.class);
     private final PosicionService posicionService;
     private final RestTemplate restTemplate;
     private static final String APIPRUEBAS = "http://localhost:8001/pruebas/finalizadas";
-    private static final String APIPRUEBAEMPLEADO = "http://localhost:8001/empleados";
+    private static final String APIPRUEBAEMPLEADO = "http://localhost:8001/pruebas/empleado";
     private static final String APIPRUEBAINTERESADO = "http://localhost:8001/interesados";
-    private final String filePath = "C:/Users/Gonzalo/Desktop/backendtpi/vehiculos/pruebasVehiculos/";
+    private final String filePath = System.getProperty("user.dir");
 
 
     @Autowired
@@ -45,21 +50,38 @@ public class ServiceReports {
 
     public void generarReporteIncidentes(){
 
+        /*
         List<PruebaDTO> pruebas = restTemplate.getForObject(APIPRUEBAS, List.class);
         List<Posicion> incidenList = new ArrayList<>();
-
-
 
         for (PruebaDTO pruebaDTO : pruebas) {
             Optional<Posicion> incidente = posicionService.obtenerEntreFechasIncidente(pruebaDTO.getFechaFin(), pruebaDTO.getFechaInicio(), pruebaDTO.getIdVehiculo());
             if(incidente.isPresent()){
                 incidenList.add(incidente.get());
             }
+        }*/
+
+        // Cambiar List.class por un ParameterizedTypeReference para List<PruebaDTO>
+        List<PruebaDTO> pruebas = restTemplate.exchange(
+                APIPRUEBAS, // URL de la API
+                HttpMethod.GET, // Método HTTP
+                null, // Headers o request body si se necesita
+                new ParameterizedTypeReference<List<PruebaDTO>>() {} // Tipo esperado
+        ).getBody();
+
+        List<Posicion> incidenList = new ArrayList<>();
+        for (PruebaDTO pruebaDTO : pruebas) {
+            Optional<Posicion> incidente = posicionService.obtenerEntreFechasIncidente
+                    (pruebaDTO.getFechaInicio(), pruebaDTO.getFechaFin(), pruebaDTO.getIdvehiculo());
+            if (incidente.isPresent()) {
+                incidenList.add(incidente.get());
+            }
         }
         // Especificar el nombre del archivo
 
         String fileName = "reporteTotalIncidentes.csv"; 
-        File file = new File(filePath + fileName);
+        File file = new File(filePath + "/" + fileName);
+        System.out.println("Generando reporte con cantidad de incidentes: " + incidenList.size() );
         try (PrintWriter printWriter = new PrintWriter(file)) {
             printWriter.println(format("%s %s %s %s %s", "Tipo Incidente","Patente Vehiculo","Fecha","Latitud","Longitud"));
             incidenList.forEach(inc -> {
@@ -74,6 +96,7 @@ public class ServiceReports {
                         inc.getLongitud()
                         ));
             });
+            System.out.println("Creado con éxito!");
         }
         catch (FileNotFoundException e) {
             throw new RuntimeException(e);
@@ -81,21 +104,31 @@ public class ServiceReports {
     }
 
 
-    public void generarReporteIncidentesEmpleado(){
+    public void generarReporteIncidentesEmpleado(Integer id){
 
-        List<PruebaDTO> pruebas = restTemplate.getForObject(APIPRUEBAEMPLEADO, List.class); 
+        // List<PruebaDTO> pruebas = restTemplate.getForObject(APIPRUEBAEMPLEADO, List.class);
+
         List<Posicion> incidenList = new ArrayList<>();
+        List<PruebaDTO> pruebas = restTemplate.exchange(
+                APIPRUEBAEMPLEADO + "/" + id, // URL de la API
+                HttpMethod.GET, // Método HTTP
+                null, // Headers o request body si se necesita
+                new ParameterizedTypeReference<List<PruebaDTO>>() {} // Tipo esperado
+        ).getBody();
 
         for (PruebaDTO pruebaDTO : pruebas) {
-            Optional<Posicion> incidente = posicionService.obtenerEntreFechasIncidente(pruebaDTO.getFechaInicio(), pruebaDTO.getFechaFin(), pruebaDTO.getIdVehiculo());
+            Optional<Posicion> incidente = posicionService.obtenerEntreFechasIncidente
+                    (pruebaDTO.getFechaInicio(), pruebaDTO.getFechaFin(), pruebaDTO.getIdvehiculo());
             if(incidente.isPresent()){
                 incidenList.add(incidente.get());
             }
         }
-        String fileName = "reporteIncidentesEmpleado.csv"; 
-        File file = new File(fileName + filePath);
+
+        String fileName = "reporteIncidentesEmpleado.csv";
+        File file = new File(filePath + "/" + fileName);
+        System.out.println("Generando reporte de incidentes empleados, cantidad: " + incidenList.size());
         try (PrintWriter printWriter = new PrintWriter(file)) {
-            printWriter.println(format("%s %s %s %s %s", "Tipo Incidente","Patente Vehiculo","Fecha","Latitud","Longitud"));
+            printWriter.println(format("%s %s %s %s %s", "TipoIncidente","Patente","Fecha","Latitud","Longitud"));
             incidenList.forEach(inc -> {
                 String tipoIncidente = "";
                 if(inc.estaFueraDeRadio()){tipoIncidente = "Salió del radio permitido";

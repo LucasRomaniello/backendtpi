@@ -65,12 +65,6 @@ public class PosicionService {
         System.out.println("Entre");
         List<Posicion> posiciones = obtenerEntreFechas(fechaInicio,fechaFin, idVehiculo);
         System.out.println(posiciones.getFirst());
-
-                /*.stream()
-                .filter(posicion -> {
-                    return posicion.getVehiculo().getId() == idVehiculo;
-                }).toList();*/
-
         Posicion posicion1 = null;
         double distanciaTotal = 0;
         double distancia = 0;

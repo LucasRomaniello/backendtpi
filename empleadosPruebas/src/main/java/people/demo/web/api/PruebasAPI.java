@@ -42,6 +42,17 @@ public class PruebasAPI {
                 : ResponseEntity.ok(pruebaDTOS);
     }
 
+    //Api para obtener todas las pruebas para un empleado
+    @GetMapping("/empleado/{id}")
+    public ResponseEntity<List<PruebaDTO>> findPruebaByID(@PathVariable int id) {
+        List<PruebaDTO> pruebaDTOS = pruebasService.findAllPruebasForEmployee(id);
+        return pruebaDTOS.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(pruebaDTOS);
+    }
+
+
+
     @GetMapping("/pruebaActual/{id}")
     public ResponseEntity<Optional<PruebaDTO>> findPruebaByIdVehiculo( @PathVariable Integer id) {
         Optional<PruebaDTO> pruebaDTO = pruebasService.findPruebaByIdVehiculo(id);

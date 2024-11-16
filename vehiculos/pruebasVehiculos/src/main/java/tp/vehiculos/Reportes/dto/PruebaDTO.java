@@ -1,5 +1,6 @@
 package tp.vehiculos.Reportes.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
@@ -18,6 +19,7 @@ public class PruebaDTO {
 
     private Integer legajo_empleado;
 
+    @JsonProperty("id_vehiculo")
     private Integer idVehiculo;
 
     private LocalDateTime fechaHoraInicio;
@@ -50,7 +52,11 @@ public class PruebaDTO {
         return fechaHoraFin;
     }
 
-    public int getIdVehiculo() {
+    public Integer getIdvehiculo() {
+        return idVehiculo;
+    }
+
+    public Integer getIdVehiculo() {
         return idVehiculo;
     }
 
