@@ -47,6 +47,7 @@ public class ReportesController {
         serviceReports.generarReporteIncidentesEmpleado(id);
         return ResponseEntity.ok().build();
     } */
+
     @GetMapping("/incidentesEmpleado/{id}")
     public ResponseEntity<String> generarReporteIncidentesEmpleado(@PathVariable Integer id) {
         try {
