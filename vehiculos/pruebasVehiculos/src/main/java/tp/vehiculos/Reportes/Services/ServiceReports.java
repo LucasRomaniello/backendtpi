@@ -155,8 +155,8 @@ public class ServiceReports {
         String file = "CantidadDeKmRecorridos";
         try (PrintWriter printWriter = new PrintWriter(file)) {
             printWriter.println("  Fecha Inicio: " + fechaDesde +
-                                "  Fecha Fin:" + fechaHasta +
-                                "  Id Vehiculo" + idVehiculo +
+                                "  Fecha Fin: " + fechaHasta +
+                                "  Id Vehiculo: " + idVehiculo +
                                 "  Km Recorridos: " + cantidadKmRedondeada
             );}
         catch (FileNotFoundException e) {
@@ -172,7 +172,6 @@ public class ServiceReports {
         File file = new File(filePath + fileName);
         try (PrintWriter printWriter = new PrintWriter(file)) {
             pruebas.forEach(prueba -> {
-
                 EmpleadoDTO empleadoDTO = restTemplate.getForObject(APIPRUEBAEMPLEADO + "/" + prueba.getLegajo_empleado(), EmpleadoDTO.class);
                 InteresadoDTO interesadoDTO = restTemplate.getForObject(APIPRUEBAINTERESADO + "/" + prueba.getId_interesado(), InteresadoDTO.class);
                 printWriter.println(

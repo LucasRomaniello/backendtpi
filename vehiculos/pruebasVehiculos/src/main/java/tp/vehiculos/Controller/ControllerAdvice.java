@@ -14,4 +14,10 @@ public class ControllerAdvice {
         return new ResponseEntity<>(errorDTO, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @ExceptionHandler(value = PosicionesNoEncontradas.class)
+    public ResponseEntity<ErrorDTO> handlePosicionesNoEncontradas(RuntimeException e){
+        ErrorDTO errorDTO = ErrorDTO.builder().message(e.getMessage()).build();
+        return new ResponseEntity<>(errorDTO, HttpStatus.NOT_FOUND);
+    }
+
 }
