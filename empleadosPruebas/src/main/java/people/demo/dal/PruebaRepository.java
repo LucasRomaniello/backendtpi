@@ -30,6 +30,12 @@ public interface PruebaRepository extends JpaRepository<Prueba, Integer> {
     List<Prueba> findPruebaFinaliza();
 
 
+    //Obtener las pruebas finalizadas para un empleado
+    @Query("SELECT p FROM Prueba p WHERE p.fechaHoraFin IS NOT NULL AND p.empleado.legajo = :legajo_empleado")
+    List<Prueba> findPruebaFinalizaPorEmpleado(@Param("legajo_empleado") Integer id_empleado);
+
+
+
 //
 //    @Query("SELECT p FROM Prueba p WHERE p.id_vehiculo = :idVehiculo AND p.fechaHoraFin IS NULL")
 //    Prueba findPruebaActual(@Param("id_vehiculo") int idVehiculo);

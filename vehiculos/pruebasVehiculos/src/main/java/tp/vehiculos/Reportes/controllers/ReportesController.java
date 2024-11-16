@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import tp.vehiculos.Reportes.Services.ServiceReports;
 import tp.vehiculos.vehiculos.dtos.InformeKmRequest;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/api/reportes")
 public class ReportesController {
@@ -24,10 +26,15 @@ public class ReportesController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/incidentesEmpleado") 
-    public ResponseEntity<Void> generarReporteIncidentesEmpleado() 
-    { serviceReports.generarReporteIncidentesEmpleado(); 
+
+    //http://localhost:8084/api/reportes/incidentesEmpleado/3 Esta seria la consulta que deberias que mandar
+    // Al postman para que ser genere el reporte, cambiar el 3 por el id del empleado
+    @GetMapping("/incidentesEmpleado/{id}")
+    public ResponseEntity<Void> generarReporteIncidentesEmpleado(@PathVariable Integer id)
+    { serviceReports.generarReporteIncidentesEmpleado(id);
         return ResponseEntity.ok().build(); }
+
+
 
     @GetMapping("/detallesPruebas")
     public ResponseEntity<Void> generarReporteDetallePrueba()
