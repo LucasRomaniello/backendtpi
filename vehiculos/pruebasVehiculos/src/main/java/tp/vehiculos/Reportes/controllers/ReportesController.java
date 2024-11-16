@@ -5,18 +5,24 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.web.servlet.resource.ResourceUrlProvider;
 import tp.vehiculos.Reportes.Services.ServiceReports;
+import tp.vehiculos.Reportes.dto.ReporteDTO;
 import tp.vehiculos.vehiculos.dtos.InformeKmRequest;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/reportes")
 public class ReportesController {
 
     private final ServiceReports serviceReports;
+    private final ResourceUrlProvider resourceUrlProvider;
 
     @Autowired
-    public ReportesController(ServiceReports serviceReports) {
+    public ReportesController(ServiceReports serviceReports, ResourceUrlProvider resourceUrlProvider) {
         this.serviceReports = serviceReports;
+        this.resourceUrlProvider = resourceUrlProvider;
     }
      /*
     @GetMapping("/incidentes")
@@ -74,10 +80,14 @@ public class ReportesController {
 
 
     @GetMapping("/detallesPruebas")
-    public ResponseEntity<Void> generarReporteDetallePrueba()
-    { serviceReports.generarReportePruebasDetalle();
-        return ResponseEntity.ok().build(); }
+    public ResponseEntity<List<ReporteDTO>> generarReporteDetallePrueba() {
+        List<ReporteDTO> reporteDTOS = serviceReports.generarReportePruebasDetalle();
+        if (reporteDTOS.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.ok(reporteDTOS);
+        }
 
+    }}
 
-}
 

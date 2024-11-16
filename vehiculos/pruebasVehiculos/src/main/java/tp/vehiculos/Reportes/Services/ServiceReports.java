@@ -18,6 +18,7 @@ import org.springframework.web.client.RestTemplate;
 import tp.vehiculos.Reportes.dto.EmpleadoDTO;
 import tp.vehiculos.Reportes.dto.InteresadoDTO;
 import tp.vehiculos.Reportes.dto.PruebaDTO;
+import tp.vehiculos.Reportes.dto.ReporteDTO;
 import tp.vehiculos.vehiculos.models.Marca;
 import tp.vehiculos.vehiculos.models.Modelo;
 import tp.vehiculos.vehiculos.models.Posicion;
@@ -47,7 +48,7 @@ public class ServiceReports {
         this.restTemplate = restTemplate;
     }
 
-    public void generarReporteIncidentes(){
+    public void generarReporteIncidentes() {
 
         /*
         List<PruebaDTO> pruebas = restTemplate.getForObject(APIPRUEBAS, List.class);
@@ -65,7 +66,8 @@ public class ServiceReports {
                 APIPRUEBAS, // URL de la API
                 HttpMethod.GET, // Método HTTP
                 null, // Headers o request body si se necesita
-                new ParameterizedTypeReference<List<PruebaDTO>>() {} // Tipo esperado
+                new ParameterizedTypeReference<List<PruebaDTO>>() {
+                } // Tipo esperado
         ).getBody();
 
         List<Posicion> incidenList = new ArrayList<>();
@@ -78,32 +80,34 @@ public class ServiceReports {
         }
         // Especificar el nombre del archivo
 
-        String fileName = "reporteTotalIncidentes.csv"; 
+        String fileName = "reporteTotalIncidentes.csv";
         File file = new File(filePath + "/" + fileName);
-        System.out.println("Generando reporte con cantidad de incidentes: " + incidenList.size() );
+        System.out.println("Generando reporte con cantidad de incidentes: " + incidenList.size());
         try (PrintWriter printWriter = new PrintWriter(file)) {
-            printWriter.println(format("%s %s %s %s %s", "Tipo Incidente","Patente Vehiculo","Fecha","Latitud","Longitud"));
+            printWriter.println(format("%s %s %s %s %s", "Tipo Incidente", "Patente Vehiculo", "Fecha", "Latitud", "Longitud"));
             incidenList.forEach(inc -> {
                 String tipoIncidente = "";
-                if(inc.estaFueraDeRadio()){tipoIncidente = "Salió del radio permitido";
-                } else{tipoIncidente= "Entró a zona peligrosa";}
+                if (inc.estaFueraDeRadio()) {
+                    tipoIncidente = "Salió del radio permitido";
+                } else {
+                    tipoIncidente = "Entró a zona peligrosa";
+                }
                 printWriter.println(String.format("%s,%s,%s,%s,%s",
                         tipoIncidente,
                         inc.getVehiculo().getPatente(),
                         inc.getFecha().toString(),
                         inc.getLatitud(),
                         inc.getLongitud()
-                        ));
+                ));
             });
             System.out.println("Creado con éxito!");
-        }
-        catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
-        }   
+        }
     }
 
 
-    public void generarReporteIncidentesEmpleado(Integer id){
+    public void generarReporteIncidentesEmpleado(Integer id) {
 
         // List<PruebaDTO> pruebas = restTemplate.getForObject(APIPRUEBAEMPLEADO, List.class);
 
@@ -112,13 +116,14 @@ public class ServiceReports {
                 APIPRUEBAEMPLEADO + "/" + id, // URL de la API
                 HttpMethod.GET, // Método HTTP
                 null, // Headers o request body si se necesita
-                new ParameterizedTypeReference<List<PruebaDTO>>() {} // Tipo esperado
+                new ParameterizedTypeReference<List<PruebaDTO>>() {
+                } // Tipo esperado
         ).getBody();
 
         for (PruebaDTO pruebaDTO : pruebas) {
             Optional<Posicion> incidente = posicionService.obtenerEntreFechasIncidente
                     (pruebaDTO.getFechaInicio(), pruebaDTO.getFechaFin(), pruebaDTO.getIdvehiculo());
-            if(incidente.isPresent()){
+            if (incidente.isPresent()) {
                 incidenList.add(incidente.get());
             }
         }
@@ -127,11 +132,14 @@ public class ServiceReports {
         File file = new File(filePath + "/" + fileName);
         System.out.println("Generando reporte de incidentes empleados, cantidad: " + incidenList.size());
         try (PrintWriter printWriter = new PrintWriter(file)) {
-            printWriter.println(format("%s %s %s %s %s", "TipoIncidente","Patente","Fecha","Latitud","Longitud"));
+            printWriter.println(format("%s %s %s %s %s", "TipoIncidente", "Patente", "Fecha", "Latitud", "Longitud"));
             incidenList.forEach(inc -> {
                 String tipoIncidente = "";
-                if(inc.estaFueraDeRadio()){tipoIncidente = "Salió del radio permitido";
-                }else{tipoIncidente= "Entró a zona peligrosa";}
+                if (inc.estaFueraDeRadio()) {
+                    tipoIncidente = "Salió del radio permitido";
+                } else {
+                    tipoIncidente = "Entró a zona peligrosa";
+                }
 
 
                 printWriter.println(String.format("%s,%s,%s,%s,%s",
@@ -142,35 +150,35 @@ public class ServiceReports {
                         inc.getLongitud()
                 ));
             });
-        }
-        catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             throw new RuntimeException("No se ha encontrado el archivo");
         }
     }
 
-    public void generarReporteCantidadKm(LocalDateTime fechaDesde, LocalDateTime fechaHasta, int idVehiculo){
+    public void generarReporteCantidadKm(LocalDateTime fechaDesde, LocalDateTime fechaHasta, int idVehiculo) {
         double cantidadKm = posicionService.calcularCantidadKm(fechaDesde, fechaHasta, idVehiculo);
         String cantidadKmRedondeada = String.format("%.2f", cantidadKm);
         String file = "CantidadDeKmRecorridos";
         try (PrintWriter printWriter = new PrintWriter(file)) {
             printWriter.println("  Fecha Inicio: " + fechaDesde +
-                                "  Fecha Fin: " + fechaHasta +
-                                "  Id Vehiculo: " + idVehiculo +
-                                "  Km Recorridos: " + cantidadKmRedondeada
-            );}
-        catch (FileNotFoundException e) {
+                    "  Fecha Fin: " + fechaHasta +
+                    "  Id Vehiculo: " + idVehiculo +
+                    "  Km Recorridos: " + cantidadKmRedondeada
+            );
+        } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
 
     }
 
-    public void generarReportePruebasDetalle() {
+    public List<ReporteDTO> generarReportePruebasDetalle() {
         // Obtener las pruebas desde la API
         ResponseEntity<List<PruebaDTO>> responsePruebas = restTemplate.exchange(
                 APIPRUEBAS, // URL de la API
                 HttpMethod.GET, // Método HTTP
                 null, // Headers o request body si se necesita
-                new ParameterizedTypeReference<List<PruebaDTO>>() {} // Tipo esperado
+                new ParameterizedTypeReference<List<PruebaDTO>>() {
+                } // Tipo esperado
         );
 
         // Verificar si la respuesta fue exitosa
@@ -179,12 +187,13 @@ public class ServiceReports {
         }
 
         List<PruebaDTO> pruebas = responsePruebas.getBody();
-
+        List<ReporteDTO> reporteDTOS = new ArrayList<>();
         // Ruta y nombre del archivo
         String fileName = "reportePruebasConDetalle.csv";
         File file = new File(filePath + "/" + fileName);
 
-        try (PrintWriter printWriter = new PrintWriter(file)) { // Abrir el archivo en modo append
+        try (PrintWriter printWriter = new PrintWriter(file)) { // Abrir el archivo en modo write
+
             // Escribir el encabezado del archivo CSV si el archivo está vacío
             if (file.length() == 0) {
                 printWriter.println("\"Fecha Inicio\",\"Fecha Fin\",\"Apellido Interesado\",\"Nombre Interesado\",\"Documento Interesado\",\"Licencia Interesado\",\"Nombre Empleado\",\"Apellido Empleado\",\"Telefono Empleado\"");
@@ -193,58 +202,61 @@ public class ServiceReports {
             // Recorrer las pruebas y agregar la información en el archivo
             for (PruebaDTO prueba : pruebas) {
 
-                    // Obtener detalles de empleado e interesado usando exchange() para manejar ResponseEntity
-                    ResponseEntity<EmpleadoDTO> empleadoResponse = restTemplate.exchange(
-                            APIPRUEBAEMPLEADO + "/" + prueba.getLegajo_empleado(),
-                            HttpMethod.GET,
-                            null,
-                            EmpleadoDTO.class
-                    );
+                // Obtener detalles de empleado e interesado usando exchange() para manejar ResponseEntity
+                ResponseEntity<EmpleadoDTO> empleadoResponse = restTemplate.exchange(
+                        APIPRUEBAEMPLEADO + "/" + prueba.getLegajo_empleado(),
+                        HttpMethod.GET,
+                        null,
+                        EmpleadoDTO.class
+                );
 
-                    // Imprimir la respuesta para verificar su contenido
-                    System.out.println("Respuesta de la API de EmpleadoDTO: " + empleadoResponse.getBody());
+                // Imprimir la respuesta para verificar su contenido
+                System.out.println("Respuesta de la API de EmpleadoDTO: " + empleadoResponse.getBody());
 
-                    EmpleadoDTO empleadoDTO = empleadoResponse.getBody();
-                    ResponseEntity<InteresadoDTO> interesadoResponse = restTemplate.exchange(
-                            APIPRUEBAINTERESADO + "/" + prueba.getId_interesado(),
-                            HttpMethod.GET,
-                            null,
-                            InteresadoDTO.class
-                    );
-                    InteresadoDTO interesadoDTO = interesadoResponse.getBody();
+                EmpleadoDTO empleadoDTO = empleadoResponse.getBody();
+                ResponseEntity<InteresadoDTO> interesadoResponse = restTemplate.exchange(
+                        APIPRUEBAINTERESADO + "/" + prueba.getId_interesado(),
+                        HttpMethod.GET,
+                        null,
+                        InteresadoDTO.class
+                );
+                InteresadoDTO interesadoDTO = interesadoResponse.getBody();
 
-                    // Validar si los objetos no son null
-                    if (empleadoDTO != null && interesadoDTO != null) {
-                        // Formatear y escribir la línea en el archivo CSV, protegiendo los datos con comillas si contienen comas
-                        printWriter.println(String.format("\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
-                                prueba.getFechaHoraInicio(),
-                                prueba.getFechaHoraFin(),
-                                interesadoDTO.getApellido(),
-                                interesadoDTO.getNombre(),
-                                interesadoDTO.getDocumento(),
-                                interesadoDTO.getNro_licencia(),
-                                empleadoDTO.getNombre(),
-                                empleadoDTO.getApellido(),
-                                empleadoDTO.getTelefonoContacto()
-                        ));
-                        printWriter.flush();
-                    } else {
-                        // Manejo de error si no se encuentra el empleado o el interesado
-                        System.out.println("Empleado o interesado no encontrado para la prueba: " + prueba.getId());
-                    }
+                // Validar si los objetos no son null
+                if (empleadoDTO != null && interesadoDTO != null) {
+                    // Formatear y escribir la línea en el archivo CSV, protegiendo los datos con comillas si contienen comas
+                    printWriter.println(String.format("\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
+                            prueba.getFechaHoraInicio(),
+                            prueba.getFechaHoraFin(),
+                            interesadoDTO.getApellido(),
+                            interesadoDTO.getNombre(),
+                            interesadoDTO.getDocumento(),
+                            interesadoDTO.getNro_licencia(),
+                            empleadoDTO.getNombre(),
+                            empleadoDTO.getApellido(),
+                            empleadoDTO.getTelefonoContacto()
+                    ));
+                    reporteDTOS.add(new ReporteDTO(
+                            prueba.getFechaHoraInicio(),
+                            prueba.getFechaHoraFin(),
+                            interesadoDTO.getApellido(),
+                            interesadoDTO.getNombre(),
+                            interesadoDTO.getDocumento(),
+                            interesadoDTO.getNro_licencia(),
+                            empleadoDTO.getNombre(),
+                            empleadoDTO.getApellido(),
+                            empleadoDTO.getTelefonoContacto()
+                    ));
+                    printWriter.flush();
+                } else {
+                    // Manejo de error si no se encuentra el empleado o el interesado
+                    System.out.println("Empleado o interesado no encontrado para la prueba: " + prueba.getId());
+                }
             }
         } catch (FileNotFoundException e) {
             throw new RuntimeException("No se ha encontrado el archivo o no se pudo crear: " + e.getMessage());
-        } catch (IOException e) {
-            throw new RuntimeException("Error al escribir en el archivo: " + e.getMessage());
         }
-    }
 
+        return reporteDTOS;
 
-
-
-
-
-
-
-}
+    }}
