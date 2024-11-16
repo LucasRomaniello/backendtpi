@@ -14,5 +14,6 @@ public class EmpleadoDTO {
 
     private String apellido;
 
-    private int telefonoContacto;
+    private Integer telefonoContacto;
+
 }

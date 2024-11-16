@@ -1,12 +1,13 @@
 package tp.vehiculos.Reportes.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
 @Data
-@NoArgsConstructor
+@NoArgsConstructor @AllArgsConstructor
 public class InteresadoDTO {
     //@NotBlank(message = "Debe ingresar el ID obligatoriamente")
     private Integer id;
@@ -24,4 +25,5 @@ public class InteresadoDTO {
     private Integer nro_licencia;
 
     private Date fecha_vencimiento_licencia;
+
     private String email;}
