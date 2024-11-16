@@ -8,8 +8,13 @@ import people.demo.dal.PruebaRepository;
 import people.demo.domain.Empleado;
 import people.demo.domain.Interesado;
 import people.demo.domain.Prueba;
+import people.demo.web.api.dto.InteresadoDTO;
 import people.demo.web.api.dto.PruebaDTO;
+import people.demo.web.controller.exception.AssignedTestException;
+import people.demo.web.controller.exception.ResourceNotFoundException;
+import people.demo.web.controller.exception.UnavailableForDrivingException;
 
+import java.lang.module.ResolutionException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -19,19 +24,20 @@ public class PruebasService {
     private final PruebaRepository pruebaRepository;
     private final InteresadoRepository interesadoRepository;
     private final EmpleadoRepository empleadoRepository;
+
     @Autowired
-    public PruebasService(PruebaRepository pruebaReposotoryosotory, InteresadoRepository interesadoRepository, EmpleadoRepository empleadoRepository){
+    public PruebasService(PruebaRepository pruebaReposotoryosotory, InteresadoRepository interesadoRepository, EmpleadoRepository empleadoRepository) {
         this.pruebaRepository = pruebaReposotoryosotory;
         this.interesadoRepository = interesadoRepository;
         this.empleadoRepository = empleadoRepository;
     }
 
-    public List<PruebaDTO> findAll(){
+    public List<PruebaDTO> findAll() {
         return pruebaRepository.findAll().stream().map(PruebaDTO::new).toList();
     }
 
     //Obtener todas las pruebas finalizadas
-    public List<PruebaDTO> findAllFinalizadas(){
+    public List<PruebaDTO> findAllFinalizadas() {
         return pruebaRepository.findPruebaFinaliza().stream().map(PruebaDTO::new).toList();
 
     }
@@ -51,80 +57,85 @@ public class PruebasService {
                 : Optional.of(new PruebaDTO(prueba.get()));
     }
 
-    public PruebaDTO add(PruebaDTO pruebaDTO) throws NullPointerException {
+    public Interesado buscarSiExisteInteresado(Integer id) {
+        return interesadoRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Interesado no encontrado"));
+    }
 
-        Optional<Interesado> interesadoOpt = interesadoRepository.findById(pruebaDTO.getId_interesado());
-        Optional<Empleado> empleadoOpt = empleadoRepository.findById(pruebaDTO.getLegajo_empleado());
-        Optional<Prueba> pruebas = pruebaRepository.findPruebaActual(pruebaDTO.getId_vehiculo());
-        //interesado
+    public Empleado buscarSiExisteEmpleado(Integer id) {
+        return empleadoRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Empleado no encontrado"));
+    }
 
-        Interesado interesado = interesadoOpt.get(); // Lanza excepción si está vacío
-        Empleado empleado = empleadoOpt.get();
-        Optional<Prueba> pruebaEmpleado = pruebaRepository.findPruebaActualEmpleado(empleado.getLegajo());
+    public PruebaDTO add(PruebaDTO pruebaDTO) {
 
-        //
-        if(interesado.verificarLicencia() && ! interesado.getRestringido() &&  pruebas.isEmpty() && pruebaEmpleado.isEmpty()){
-            pruebaRepository.save(pruebaDTO.toEntity(pruebaDTO, interesado, empleado));
-            return pruebaDTO;
+        Empleado empleado = buscarSiExisteEmpleado(pruebaDTO.getLegajo_empleado());
+        Interesado interesado = buscarSiExisteInteresado(pruebaDTO.getId_interesado());
+
+        if (pruebaRepository.findPruebaActual(pruebaDTO.getId_vehiculo()).isPresent() ||
+                pruebaRepository.findPruebaActualEmpleado(empleado.getLegajo()).isPresent()) {
+            throw new AssignedTestException("Ya hay una prueba asignada para ese empleado o vehículo");
         }
-        else {
-            return new PruebaDTO();
+
+        if (!interesado.verificarLicencia() || interesado.getRestringido()) {
+            throw new UnavailableForDrivingException("El interesado no está disponible para conducir");
         }
 
-    }
-
-    public Interesado buscarInteresado(int id){
-        Optional<Interesado> Optinteresado = interesadoRepository.findById(id);
-        return Optinteresado.orElse(null);
-    }
-
-    public Empleado buscarEmpleado(int id){
-        Optional<Empleado> optEmpleado = empleadoRepository.findById(id);
-        return optEmpleado.orElse(null);
-    }
-
-    public List<PruebaDTO> addAll(List<PruebaDTO> pruebaDTOS) {
-
-        List<Prueba> pruebas = pruebaRepository.saveAll(
-                pruebaDTOS.stream()
-                        .map(pruebaDTO -> PruebaDTO.toEntity(pruebaDTO, buscarInteresado(pruebaDTO.getId_interesado()),
-                                buscarEmpleado(pruebaDTO.getLegajo_empleado())))
-                        .toList() // Convert the Stream to a List
-        );
-
-        return pruebas.stream().map(PruebaDTO::new).toList();
+        pruebaRepository.save(pruebaDTO.toEntity(pruebaDTO, interesado, empleado));
+        return pruebaDTO;
     }
 
 
-    public List<PruebaDTO> findAllWithFechaFinIsNull(){
+    //public Interesado buscarInteresado(int id) {
+    //  Optional<Interesado> Optinteresado = interesadoRepository.findById(id);
+    //return Optinteresado.orElse(null);
+    //}
+
+    //  public Empleado buscarEmpleado(int id) {
+    //    Optional<Empleado> optEmpleado = empleadoRepository.findById(id);
+    //  return optEmpleado.orElse(null);
+    //}
+
+    //public List<PruebaDTO> addAll(List<PruebaDTO> pruebaDTOS) {
+
+    //  List<Prueba> pruebas = pruebaRepository.saveAll(
+    //       pruebaDTOS.stream()
+        //.map(pruebaDTO -> pruebaDTO.toEntity(pruebaDTO, buscarSiExisteInteresado(pruebaDTO.getId_interesado()),
+          //                      buscarSiExisteEmpleado(pruebaDTO.getLegajo_empleado())))
+            //            .toList() // Convert the Stream to a List
+        //);
+
+        //return pruebas.stream().map(PruebaDTO::new).toList();
+    //}
+
+
+    public List<PruebaDTO> findAllWithFechaFinIsNull() {
         List<Prueba> listPrueba = pruebaRepository.findPruebaEnCurso();
         return listPrueba.stream().map(PruebaDTO::new).toList();
 
     }
 
-    public Optional<PruebaDTO> findPruebaByIdVehiculo(Integer idVehiculo){
+    public Optional<PruebaDTO> findPruebaByIdVehiculo(Integer idVehiculo) {
         Optional<Prueba> optPrueba = pruebaRepository.findPruebaActual(idVehiculo);
 
         return optPrueba.stream().map(PruebaDTO::new).toList().stream().findFirst();
     }
 
 
-
     //Finalizar una prueba ya comenzada
-    public PruebaDTO update (PruebaDTO pruebaDTO){
+    public PruebaDTO update(PruebaDTO pruebaDTO, Integer id) {
 
         //REVISAR----------------------------------------------------
-        Interesado interesado = buscarInteresado(pruebaDTO.getId_interesado());
-        Empleado empleado = buscarEmpleado(pruebaDTO.getLegajo_empleado());
-        Optional<Prueba> pruebaOptional = pruebaRepository.findById(pruebaDTO.getId());
-        if(pruebaOptional.isPresent()){
-            Prueba prueba = pruebaOptional.get();
+        //Interesado interesado = buscarSiExisteInteresado(pruebaDTO.getId_interesado());
+        //Empleado empleado = buscarSiExisteEmpleado(pruebaDTO.getLegajo_empleado());
+        Optional<Prueba> pruebaOptional = pruebaRepository.findById(id);
+        if (pruebaOptional.isPresent()) {
+            Prueba prueba = pruebaOptional.get(); //Revisar
             prueba.setFechaHoraFin(LocalDateTime.now());
             prueba.setComentarios(pruebaDTO.getComentarios());
             pruebaRepository.save(prueba);
             return new PruebaDTO(prueba);
         }
-        return new PruebaDTO();
+        throw new ResourceNotFoundException("No se ha encontrado una prueba con ese id");
         //interesado
 
 

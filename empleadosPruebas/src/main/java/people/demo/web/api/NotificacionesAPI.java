@@ -14,7 +14,7 @@ import people.demo.web.service.NotificacionService;
 @RestController
 @RequestMapping("/notificarVehiculo")
 public class NotificacionesAPI {
-    private NotificacionService notificacionService;
+    private final NotificacionService notificacionService;
 
     @Autowired
     public NotificacionesAPI(NotificacionService notificacionService) {

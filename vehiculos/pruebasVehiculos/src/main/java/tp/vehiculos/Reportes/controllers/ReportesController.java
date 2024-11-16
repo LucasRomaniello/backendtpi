@@ -38,7 +38,6 @@ public class ReportesController {
         }
     }
 
-
     //http://localhost:8084/api/reportes/incidentesEmpleado/3 Esta seria la consulta que deberias que mandar
     // Al postman para que ser genere el reporte, cambiar el 3 por el id del empleado
     /*
@@ -47,6 +46,7 @@ public class ReportesController {
         serviceReports.generarReporteIncidentesEmpleado(id);
         return ResponseEntity.ok().build();
     } */
+
     @GetMapping("/incidentesEmpleado/{id}")
     public ResponseEntity<String> generarReporteIncidentesEmpleado(@PathVariable Integer id) {
         try {

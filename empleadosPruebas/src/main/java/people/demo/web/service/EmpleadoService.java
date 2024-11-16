@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import people.demo.dal.EmpleadoRepository;
 import people.demo.domain.Empleado;
 import people.demo.web.api.dto.EmpleadoDTO;
-import people.demo.web.api.exception.ResourceNotFoundException;
+import people.demo.web.controller.exception.ResourceNotFoundException;
 
 import java.util.List;
 import java.util.Optional;

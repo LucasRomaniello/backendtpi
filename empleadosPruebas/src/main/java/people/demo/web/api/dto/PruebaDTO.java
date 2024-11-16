@@ -13,7 +13,7 @@ import java.util.Date;
 @Setter
 @Getter
 public class PruebaDTO {
-    //@NotBlank(message = "Debe ingresar el ID obligatoriamente")
+    //@NotBlank(message = "Debe ingresar el ID obligatoriamente") mejorar
     private Integer id;
 
     private Integer id_interesado;
@@ -52,7 +52,7 @@ public class PruebaDTO {
 //    }
 
 
-    public static PruebaDTO toDTO(Prueba prueba) {
+    public PruebaDTO toDTO(Prueba prueba) {
         if (prueba == null) return null;
 
         return new PruebaDTO(prueba);
@@ -63,7 +63,7 @@ public class PruebaDTO {
 //        return new Prueba(pruebaDTO.getId(), interesado, empleado, pruebaDTO.getFechaHoraInicio(),null, pruebaDTO.getComentarios(), pruebaDTO.getId_vehiculo());
 //    }
 
-    public static Prueba toEntity(PruebaDTO pruebaDTO, Interesado interesado, Empleado empleado) {
+    public Prueba toEntity(PruebaDTO pruebaDTO, Interesado interesado, Empleado empleado) {
         Prueba prueba = new Prueba();
         prueba.setId(pruebaDTO.getId());
         prueba.setInteresado(interesado);
