@@ -8,8 +8,6 @@ import org.springframework.web.bind.annotation.*;
 import tp.vehiculos.Reportes.Services.ServiceReports;
 import tp.vehiculos.vehiculos.dtos.InformeKmRequest;
 
-import java.util.Optional;
-
 @RestController
 @RequestMapping("/api/reportes")
 public class ReportesController {
@@ -60,13 +58,20 @@ public class ReportesController {
                     .body("Hubo un error al generar el reporte para el empleado con ID " + id);
         }
     }
-
+/*
     @PostMapping("/informeKmRecorridos")
     public ResponseEntity<Double>  calcularKMParaVehiculoEnPeriodo(@RequestBody InformeKmRequest informeKmRequest){
         serviceReports.generarReporteCantidadKm(informeKmRequest.getFechaDesde(),informeKmRequest.getFechaHasta(), informeKmRequest.getId_vehiculo());
         return ResponseEntity.ok().build();
-
     }
+*/
+    @PostMapping("/informeKmRecorridos")
+    public ResponseEntity<String> calcularKMParaVehiculoEnPeriodo(@RequestBody InformeKmRequest informeKmRequest){
+            serviceReports.generarReporteCantidadKm(informeKmRequest.getFechaDesde(),informeKmRequest.getFechaHasta(), informeKmRequest.getId_vehiculo());
+            return ResponseEntity.ok("Reporte generado con éxito");
+    }
+
+
 
     @GetMapping("/detallesPruebas")
     public ResponseEntity<Void> generarReporteDetallePrueba()

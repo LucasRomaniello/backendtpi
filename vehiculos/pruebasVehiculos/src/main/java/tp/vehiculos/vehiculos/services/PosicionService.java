@@ -63,7 +63,6 @@ public class PosicionService {
     }
 
     public double calcularCantidadKm(LocalDateTime fechaInicio, LocalDateTime fechaFin, int idVehiculo){
-        System.out.println("Entre");
         List<Posicion> posiciones = obtenerEntreFechas(fechaInicio,fechaFin, idVehiculo);
 
         if (posiciones.isEmpty()){
