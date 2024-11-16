@@ -151,12 +151,13 @@ public class ServiceReports {
 
     public void generarReporteCantidadKm(LocalDateTime fechaDesde, LocalDateTime fechaHasta, int idVehiculo){
         double cantidadKm = posicionService.calcularCantidadKm(fechaDesde, fechaHasta, idVehiculo);
+        String cantidadKmRedondeada = String.format("%.2f", cantidadKm);
         String file = "CantidadDeKmRecorridos";
         try (PrintWriter printWriter = new PrintWriter(file)) {
             printWriter.println("  Fecha Inicio: " + fechaDesde +
                                 "  Fecha Fin:" + fechaHasta +
                                 "  Id Vehiculo" + idVehiculo +
-                                "  Km Recorridos: " + cantidadKm
+                                "  Km Recorridos: " + cantidadKmRedondeada
             );}
         catch (FileNotFoundException e) {
             throw new RuntimeException(e);
