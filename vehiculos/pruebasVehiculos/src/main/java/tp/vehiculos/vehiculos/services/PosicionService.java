@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
+import tp.vehiculos.Controller.PosicionesNoEncontradas;
 import tp.vehiculos.Reportes.dto.PruebaDTO;
 import tp.vehiculos.vehiculos.configurations.Geolocalizacion;
 import tp.vehiculos.vehiculos.dtos.PosicionDto;
@@ -64,7 +65,13 @@ public class PosicionService {
     public double calcularCantidadKm(LocalDateTime fechaInicio, LocalDateTime fechaFin, int idVehiculo){
         System.out.println("Entre");
         List<Posicion> posiciones = obtenerEntreFechas(fechaInicio,fechaFin, idVehiculo);
+
+        if (posiciones.isEmpty()){
+            throw new PosicionesNoEncontradas("Posiciones no encontradas para ese vehiculo");
+        };
+
         System.out.println(posiciones.getFirst());
+
         Posicion posicion1 = null;
         double distanciaTotal = 0;
         double distancia = 0;
