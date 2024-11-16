@@ -11,7 +11,6 @@ public class Geolocalizacion {
 
         // Usar el teorema de Pitágoras para calcular la distancia euclidiana
         double distancia = Math.sqrt(Math.pow(lat2Km - lat1Km, 2) + Math.pow(lon2Km - lon1Km, 2));
-        System.out.println(distancia);
         return distancia;
     }
 }

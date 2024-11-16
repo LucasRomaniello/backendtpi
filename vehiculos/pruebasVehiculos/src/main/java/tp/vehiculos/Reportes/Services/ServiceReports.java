@@ -128,7 +128,7 @@ public class ServiceReports {
         File file = new File(filePath + "/" + fileName);
         System.out.println("Generando reporte de incidentes empleados, cantidad: " + incidenList.size());
         try (PrintWriter printWriter = new PrintWriter(file)) {
-            printWriter.println(format("%s %s %s %s %s", "Tipo Incidente","Patente Vehiculo","Fecha","Latitud","Longitud"));
+            printWriter.println(format("%s %s %s %s %s", "TipoIncidente","Patente","Fecha","Latitud","Longitud"));
             incidenList.forEach(inc -> {
                 String tipoIncidente = "";
                 if(inc.estaFueraDeRadio()){tipoIncidente = "Salió del radio permitido";
