@@ -1,9 +1,7 @@
 package tp.vehiculos.Reportes.Services;
 
 import java.io.*;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import org.slf4j.Logger;
@@ -15,18 +13,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import tp.vehiculos.Controller.NoPruebasEncontradasException;
 import tp.vehiculos.Reportes.dto.EmpleadoDTO;
 import tp.vehiculos.Reportes.dto.InteresadoDTO;
 import tp.vehiculos.Reportes.dto.PruebaDTO;
 import tp.vehiculos.Reportes.dto.ReporteDTO;
-import tp.vehiculos.vehiculos.models.Marca;
-import tp.vehiculos.vehiculos.models.Modelo;
 import tp.vehiculos.vehiculos.models.Posicion;
-import tp.vehiculos.vehiculos.models.Vehiculo;
-import tp.vehiculos.vehiculos.repositories.PosicionRepository;
-import tp.vehiculos.vehiculos.services.ConfiguracionService;
 import tp.vehiculos.vehiculos.services.PosicionService;
-import tp.vehiculos.vehiculos.services.VehiculoService;
 
 import static java.lang.String.format;
 
@@ -37,7 +30,8 @@ public class ServiceReports {
     private final PosicionService posicionService;
     private final RestTemplate restTemplate;
     private static final String APIPRUEBAS = "http://localhost:8001/pruebas/finalizadas";
-    private static final String APIPRUEBAEMPLEADO = "http://localhost:8001/empleados";
+    private static final String APIPRUEBAS_PARAEMPLEADO = "http://localhost:8001/pruebas/empleado";
+    private static final String APIEMPLEADO = "http://localhost:8001/empleados";
     private static final String APIPRUEBAINTERESADO = "http://localhost:8001/interesados";
     private final String filePath = System.getProperty("user.dir");
 
@@ -113,12 +107,16 @@ public class ServiceReports {
 
         List<Posicion> incidenList = new ArrayList<>();
         List<PruebaDTO> pruebas = restTemplate.exchange(
-                APIPRUEBAEMPLEADO + "/" + id, // URL de la API
+                APIPRUEBAS_PARAEMPLEADO + "/" + id, // URL de la API
                 HttpMethod.GET, // Método HTTP
                 null, // Headers o request body si se necesita
                 new ParameterizedTypeReference<List<PruebaDTO>>() {
                 } // Tipo esperado
         ).getBody();
+
+        if (pruebas.isEmpty()) {
+            throw new NoPruebasEncontradasException("No se encontraron pruebas para el empleado con id: " + id);
+        }
 
         for (PruebaDTO pruebaDTO : pruebas) {
             Optional<Posicion> incidente = posicionService.obtenerEntreFechasIncidente
@@ -129,8 +127,11 @@ public class ServiceReports {
         }
 
         String fileName = "reporteIncidentesEmpleado.csv";
+
         File file = new File(filePath + "/" + fileName);
+
         System.out.println("Generando reporte de incidentes empleados, cantidad: " + incidenList.size());
+
         try (PrintWriter printWriter = new PrintWriter(file)) {
             printWriter.println(format("%s %s %s %s %s", "TipoIncidente", "Patente", "Fecha", "Latitud", "Longitud"));
             incidenList.forEach(inc -> {
@@ -204,7 +205,7 @@ public class ServiceReports {
 
                 // Obtener detalles de empleado e interesado usando exchange() para manejar ResponseEntity
                 ResponseEntity<EmpleadoDTO> empleadoResponse = restTemplate.exchange(
-                        APIPRUEBAEMPLEADO + "/" + prueba.getLegajo_empleado(),
+                        APIEMPLEADO + "/" + prueba.getLegajo_empleado(),
                         HttpMethod.GET,
                         null,
                         EmpleadoDTO.class

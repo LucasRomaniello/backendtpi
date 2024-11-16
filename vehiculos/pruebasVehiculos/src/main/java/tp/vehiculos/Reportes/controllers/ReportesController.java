@@ -56,7 +56,7 @@ public class ReportesController {
         try {
             // Intentamos generar el reporte para el empleado con el ID proporcionado
             serviceReports.generarReporteIncidentesEmpleado(id);
-            // Si todo sale bien, devolvemos un mensaje de éxito
+            // Si tod sale bien, devolvemos un mensaje de éxito
             return ResponseEntity.ok("Reporte generado con éxito para el empleado con ID " + id);
         } catch (Exception e) {
             // Si hay algún error, devolvemos un mensaje de error

@@ -20,4 +20,10 @@ public class ControllerAdvice {
         return new ResponseEntity<>(errorDTO, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(value = NoPruebasEncontradasException.class)
+    public ResponseEntity<ErrorDTO> handleNoPruebasEncontradas(RuntimeException e){
+        ErrorDTO errorDTO = ErrorDTO.builder().message(e.getMessage()).build();
+        return new ResponseEntity<>(errorDTO, HttpStatus.NOT_FOUND);
+    }
+
 }
