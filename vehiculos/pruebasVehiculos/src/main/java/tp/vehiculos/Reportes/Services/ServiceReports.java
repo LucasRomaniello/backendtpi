@@ -184,7 +184,7 @@ public class ServiceReports {
         String fileName = "reportePruebasConDetalle.csv";
         File file = new File(filePath + "/" + fileName);
 
-        try (PrintWriter printWriter = new PrintWriter(new FileWriter(file, true))) { // Abrir el archivo en modo append
+        try (PrintWriter printWriter = new PrintWriter(file)) { // Abrir el archivo en modo append
             // Escribir el encabezado del archivo CSV si el archivo está vacío
             if (file.length() == 0) {
                 printWriter.println("\"Fecha Inicio\",\"Fecha Fin\",\"Apellido Interesado\",\"Nombre Interesado\",\"Documento Interesado\",\"Licencia Interesado\",\"Nombre Empleado\",\"Apellido Empleado\",\"Telefono Empleado\"");
