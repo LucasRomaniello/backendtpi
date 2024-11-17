@@ -24,6 +24,8 @@ public interface PruebaRepository extends JpaRepository<Prueba, Integer> {
     //Query ya definida por el repository
     Optional<Prueba> findById(Integer id);
 
+    @Query("SELECT p FROM Prueba p WHERE p.fechaHoraFin IS NULL AND p.id = :id")
+    Optional<Prueba> findPruebaParaTerminar(@Param("id") Integer id);
 
     //Query para obtener las pruebas ya finalizadas
     @Query("SELECT p FROM Prueba p WHERE p.fechaHoraFin IS NOT NULL")

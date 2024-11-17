@@ -150,6 +150,19 @@ public class PruebasService {
         pruebaRepository.deleteById(pid);
         return true;
     }
+
+    public PruebaDTO terminarPrueba(PruebaDTO pruebaDTO, Integer id){
+        Optional<Prueba> pruebaOptional = pruebaRepository.findPruebaParaTerminar(id);
+        if (pruebaOptional.isPresent()) {
+            Prueba prueba = pruebaOptional.get(); //Revisar
+            prueba.setFechaHoraFin(LocalDateTime.now());
+            prueba.setComentarios(pruebaDTO.getComentarios());
+            pruebaRepository.save(prueba);
+            return new PruebaDTO(prueba);
+        }
+        throw new ResourceNotFoundException("No se ha encontrado una prueba cancelable con ese id");
+    }
+
 }
 
 

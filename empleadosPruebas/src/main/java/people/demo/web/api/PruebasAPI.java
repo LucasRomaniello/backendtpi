@@ -6,6 +6,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import people.demo.domain.Prueba;
 import people.demo.web.api.dto.PruebaDTO;
 import people.demo.web.controller.exception.ResourceNotFoundException;
 import people.demo.web.service.PruebasService;
@@ -100,6 +101,14 @@ public class PruebasAPI {
             @Valid @RequestBody PruebaDTO pruebaDTO
     ) {
         return new ResponseEntity<>(pruebasService.update(pruebaDTO, id), HttpStatus.ACCEPTED);
+    }
+
+    @PostMapping("/{id}")
+    public ResponseEntity<PruebaDTO> terminarPrueba(
+            @PathVariable Integer id,
+            @Valid @RequestBody PruebaDTO pruebaDTO
+    ){
+        return new ResponseEntity<>(pruebasService.terminarPrueba(pruebaDTO, id), HttpStatus.ACCEPTED);
     }
 
     @DeleteMapping("/{id}")
