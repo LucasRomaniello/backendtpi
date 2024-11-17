@@ -95,6 +95,9 @@ public class PruebasAPI {
         return new ResponseEntity<>(pruebasService.add(pruebaDTO), HttpStatus.CREATED);
     }
 
+    /*
+    PARA QUÉ QUERER MODIFICAR UNA PRUEBA?
+
     @PutMapping("/{id}")
     public ResponseEntity<PruebaDTO> updatePrueba(
             @PathVariable Integer id,
@@ -102,7 +105,7 @@ public class PruebasAPI {
     ) {
         return new ResponseEntity<>(pruebasService.update(pruebaDTO, id), HttpStatus.ACCEPTED);
     }
-
+    */
     @PostMapping("/{id}")
     public ResponseEntity<PruebaDTO> terminarPrueba(
             @PathVariable Integer id,
