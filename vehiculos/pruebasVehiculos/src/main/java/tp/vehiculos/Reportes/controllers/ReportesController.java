@@ -60,7 +60,7 @@ public class ReportesController {
     public ResponseEntity<String> generarReporteIncidentesEmpleado(@PathVariable Integer id,
                                                                    HttpServletRequest request) {
         try {
-            serviceReports.generarReporteIncidentesEmpleado(id);
+            serviceReports.generarReporteIncidentesEmpleado(id, request);
             // Si tod sale bien, devolvemos un mensaje de éxito
             return ResponseEntity.ok("Reporte generado con éxito para el empleado con ID " + id);
         } catch (Exception e) {

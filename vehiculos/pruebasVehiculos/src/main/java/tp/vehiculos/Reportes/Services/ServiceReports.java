@@ -58,7 +58,7 @@ public class ServiceReports {
 
         pruebas = jwTService.getWithJwt(token, APIPRUEBAS, new ParameterizedTypeReference<List<PruebaDTO>>() {});
 
-
+        if (pruebas.isEmpty()) throw new NoPruebasEncontradasException("No se encontraron pruebas!");
 
         for (PruebaDTO pruebaDTO : pruebas) {
             Optional<Posicion> incidente = posicionService.obtenerEntreFechasIncidente
@@ -67,9 +67,8 @@ public class ServiceReports {
                 incidenList.add(incidente.get());
             }
         }
-        System.out.println("PASO EL FOR de pruebas dto");
-        // Especificar el nombre del archivo
 
+        // Especificar el nombre del archivo
         String fileName = "reporteTotalIncidentes.csv";
         File file = new File(filePath + "/" + fileName);
         System.out.println("Generando reporte con cantidad de incidentes: " + incidenList.size());
@@ -99,18 +98,17 @@ public class ServiceReports {
         }
     }
 
-    public void generarReporteIncidentesEmpleado(Integer id) {
+    public void generarReporteIncidentesEmpleado(Integer id, HttpServletRequest request) throws Exception {
 
-        // List<PruebaDTO> pruebas = restTemplate.getForObject(APIPRUEBAEMPLEADO, List.class);
-
+        List<PruebaDTO> pruebas = new ArrayList<>();
         List<Posicion> incidenList = new ArrayList<>();
-        List<PruebaDTO> pruebas = restTemplate.exchange(
-                APIPRUEBAS_PARAEMPLEADO + "/" + id, // URL de la API
-                HttpMethod.GET, // Método HTTP
-                null, // Headers o request body si se necesita
-                new ParameterizedTypeReference<List<PruebaDTO>>() {
-                } // Tipo esperado
-        ).getBody();
+
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            // Extraer el token JWT del encabezado (quitar "Bearer ")
+            String token = authHeader.substring(7);
+            String url = APIPRUEBAS_PARAEMPLEADO + "/" + id;
+            pruebas = jwTService.getWithJwt(token, url, new ParameterizedTypeReference<List<PruebaDTO>>() {});
 
         if (pruebas.isEmpty()) {
             throw new NoPruebasEncontradasException("No se encontraron pruebas para el empleado con id: " + id);
@@ -151,6 +149,9 @@ public class ServiceReports {
             });
         } catch (FileNotFoundException e) {
             throw new RuntimeException("No se ha encontrado el archivo");
+        }}
+        else {
+            throw new Exception ("Token JWT no proporcionado o inválido.");
         }
     }
 
