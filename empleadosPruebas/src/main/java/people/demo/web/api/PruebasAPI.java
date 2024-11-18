@@ -52,7 +52,14 @@ public class PruebasAPI {
                 : ResponseEntity.ok(pruebaDTOS);
     }
 
-
+    //Api para obtener todas las pruebas para un vehiculo
+    @GetMapping("/vehiculo/{id}")
+    public ResponseEntity<List<PruebaDTO>> findPruebaByVehiculoID(@PathVariable int id) {
+        List<PruebaDTO> pruebaDTOS = pruebasService.findAllPruebasForVehiculo(id);
+        return pruebaDTOS.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(pruebaDTOS);
+    }
 
     @GetMapping("/pruebaActual/{id}")
     public ResponseEntity<Optional<PruebaDTO>> findPruebaByIdVehiculo( @PathVariable Integer id) {

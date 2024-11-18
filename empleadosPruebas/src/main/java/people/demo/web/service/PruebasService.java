@@ -47,7 +47,10 @@ public class PruebasService {
         return pruebaRepository.findPruebaFinalizaPorEmpleado(id).stream().map(PruebaDTO::new).toList();
     }
 
-
+    //Obtener las pruebas finalizadas para un empleado
+    public List<PruebaDTO> findAllPruebasForVehiculo(Integer id){
+        return pruebaRepository.findPruebaFinalizaPorVehiculo(id).stream().map(PruebaDTO::new).toList();
+    }
 
     public Optional<PruebaDTO> findById(Integer pid) {
         Optional<Prueba> prueba = pruebaRepository.findById(pid);

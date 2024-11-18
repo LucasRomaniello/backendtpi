@@ -28,12 +28,6 @@ public class ReportesController {
         this.resourceUrlProvider = resourceUrlProvider;
         this.jwTService = jwTService;
     }
-     /*
-    @GetMapping("/incidentes")
-    public ResponseEntity<Void> generarReporteIncidentes() {
-        serviceReports.generarReporteIncidentes();
-        return ResponseEntity.ok().build();
-    }*/
 
     @GetMapping("/incidentes")
     public ResponseEntity<String> generarReporteIncidentes(HttpServletRequest request) {
@@ -45,15 +39,6 @@ public class ReportesController {
                     .body("Hubo un error al generar el reporte.");
         }
     }
-
-    //http://localhost:8084/api/reportes/incidentesEmpleado/3 Esta seria la consulta que deberias que mandar
-    // Al postman para que ser genere el reporte, cambiar el 3 por el id del empleado
-    /*
-    @GetMapping("/incidentesEmpleado/{id}")
-    public ResponseEntity<Void> generarReporteIncidentesEmpleado(@PathVariable Integer id){
-        serviceReports.generarReporteIncidentesEmpleado(id);
-        return ResponseEntity.ok().build();
-    } */
 
     @GetMapping("/incidentesEmpleado/{id}")
     public ResponseEntity<String> generarReporteIncidentesEmpleado(@PathVariable Integer id,
@@ -75,19 +60,31 @@ public class ReportesController {
         return ResponseEntity.ok().build();
     }
 */
-    @PostMapping("/informeKmRecorridos")
+//    @PostMapping("/informeKmRecorridos")
+//    public ResponseEntity<String> calcularKMParaVehiculoEnPeriodo(@RequestBody InformeKmRequest informeKmRequest){
+//            serviceReports.generarReporteCantidadKm(informeKmRequest.getFechaDesde(),informeKmRequest.getFechaHasta(), informeKmRequest.getId_vehiculo());
+//            return ResponseEntity.ok("Reporte generado con éxito");
+//    }
+
+    @GetMapping("/informeKmRecorridos")
     public ResponseEntity<String> calcularKMParaVehiculoEnPeriodo(@RequestBody InformeKmRequest informeKmRequest){
+        try {
+            System.out.println(informeKmRequest);
             serviceReports.generarReporteCantidadKm(informeKmRequest.getFechaDesde(),informeKmRequest.getFechaHasta(), informeKmRequest.getId_vehiculo());
             return ResponseEntity.ok("Reporte generado con éxito");
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
     }
 
 
-
-    @GetMapping("/detallesPruebas")
-    public ResponseEntity<List<ReporteDTO>> generarReporteDetallePrueba(HttpServletRequest request) {
+    @GetMapping("/detallesPruebas/{id}")
+    public ResponseEntity<List<ReporteDTO>> generarReporteDetallePrueba(@PathVariable Integer id,
+            HttpServletRequest request) {
         List<ReporteDTO> reporteDTOS = null;
         try {
-            reporteDTOS = serviceReports.generarReportePruebasDetalle(request);
+            reporteDTOS = serviceReports.generarReportePruebasDetalle(id, request);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -97,8 +94,6 @@ public class ReportesController {
             return ResponseEntity.ok(reporteDTOS);
         }
     }
-
-
 
 }
 

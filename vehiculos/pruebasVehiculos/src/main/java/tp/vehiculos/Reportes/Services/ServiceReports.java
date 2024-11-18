@@ -34,6 +34,7 @@ public class ServiceReports {
     private final RestTemplate restTemplate;
     private static final String APIPRUEBAS = "http://localhost:8001/pruebas/finalizadas";
     private static final String APIPRUEBAS_PARAEMPLEADO = "http://localhost:8001/pruebas/empleado";
+    private static final String APIPRUEBAS_PARAVEHICULO = "http://localhost:8001/pruebas/vehiculo";
     private static final String APIEMPLEADO = "http://localhost:8001/empleados";
     private static final String APIPRUEBAINTERESADO = "http://localhost:8001/interesados";
     private final String filePath = System.getProperty("user.dir");
@@ -56,45 +57,46 @@ public class ServiceReports {
             // Extraer el token JWT del encabezado (quitar "Bearer ")
             String token = authHeader.substring(7);
 
-        pruebas = jwTService.getWithJwt(token, APIPRUEBAS, new ParameterizedTypeReference<List<PruebaDTO>>() {});
-
-        if (pruebas.isEmpty()) throw new NoPruebasEncontradasException("No se encontraron pruebas!");
-
-        for (PruebaDTO pruebaDTO : pruebas) {
-            Optional<Posicion> incidente = posicionService.obtenerEntreFechasIncidente
-                    (pruebaDTO.getFechaInicio(), pruebaDTO.getFechaFin(), pruebaDTO.getIdvehiculo());
-            if (incidente.isPresent()) {
-                incidenList.add(incidente.get());
-            }
-        }
-
-        // Especificar el nombre del archivo
-        String fileName = "reporteTotalIncidentes.csv";
-        File file = new File(filePath + "/" + fileName);
-        System.out.println("Generando reporte con cantidad de incidentes: " + incidenList.size());
-        try (PrintWriter printWriter = new PrintWriter(file)) {
-            printWriter.println(format("%s %s %s %s %s", "Tipo Incidente", "Patente Vehiculo", "Fecha", "Latitud", "Longitud"));
-            incidenList.forEach(inc -> {
-                String tipoIncidente = "";
-                if (inc.estaFueraDeRadio()) {
-                    tipoIncidente = "Salió del radio permitido";
-                } else {
-                    tipoIncidente = "Entró a zona peligrosa";
-                }
-                printWriter.println(String.format("%s,%s,%s,%s,%s",
-                        tipoIncidente,
-                        inc.getVehiculo().getPatente(),
-                        inc.getFecha().toString(),
-                        inc.getLatitud(),
-                        inc.getLongitud()
-                ));
+            pruebas = jwTService.getWithJwt(token, APIPRUEBAS, new ParameterizedTypeReference<List<PruebaDTO>>() {
             });
-            System.out.println("Creado con éxito!");
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-        }else {
-            throw new Exception ("Token JWT no proporcionado o inválido.");
+
+            if (pruebas.isEmpty()) throw new NoPruebasEncontradasException("No se encontraron pruebas!");
+
+            for (PruebaDTO pruebaDTO : pruebas) {
+                Optional<Posicion> incidente = posicionService.obtenerEntreFechasIncidente
+                        (pruebaDTO.getFechaInicio(), pruebaDTO.getFechaFin(), pruebaDTO.getIdvehiculo());
+                if (incidente.isPresent()) {
+                    incidenList.add(incidente.get());
+                }
+            }
+
+            // Especificar el nombre del archivo
+            String fileName = "reporteTotalIncidentes.csv";
+            File file = new File(filePath + "/" + fileName);
+            System.out.println("Generando reporte con cantidad de incidentes: " + incidenList.size());
+            try (PrintWriter printWriter = new PrintWriter(file)) {
+                printWriter.println(format("%s %s %s %s %s", "Tipo Incidente", "Patente Vehiculo", "Fecha", "Latitud", "Longitud"));
+                incidenList.forEach(inc -> {
+                    String tipoIncidente = "";
+                    if (inc.estaFueraDeRadio()) {
+                        tipoIncidente = "Salió del radio permitido";
+                    } else {
+                        tipoIncidente = "Entró a zona peligrosa";
+                    }
+                    printWriter.println(String.format("%s,%s,%s,%s,%s",
+                            tipoIncidente,
+                            inc.getVehiculo().getPatente(),
+                            inc.getFecha().toString(),
+                            inc.getLatitud(),
+                            inc.getLongitud()
+                    ));
+                });
+                System.out.println("Creado con éxito!");
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            throw new Exception("Token JWT no proporcionado o inválido.");
         }
     }
 
@@ -108,50 +110,51 @@ public class ServiceReports {
             // Extraer el token JWT del encabezado (quitar "Bearer ")
             String token = authHeader.substring(7);
             String url = APIPRUEBAS_PARAEMPLEADO + "/" + id;
-            pruebas = jwTService.getWithJwt(token, url, new ParameterizedTypeReference<List<PruebaDTO>>() {});
-
-        if (pruebas.isEmpty()) {
-            throw new NoPruebasEncontradasException("No se encontraron pruebas para el empleado con id: " + id);
-        }
-
-        for (PruebaDTO pruebaDTO : pruebas) {
-            Optional<Posicion> incidente = posicionService.obtenerEntreFechasIncidente
-                    (pruebaDTO.getFechaInicio(), pruebaDTO.getFechaFin(), pruebaDTO.getIdvehiculo());
-            if (incidente.isPresent()) {
-                incidenList.add(incidente.get());
-            }
-        }
-
-        String fileName = "reporteIncidentesEmpleado.csv";
-
-        File file = new File(filePath + "/" + fileName);
-
-        System.out.println("Generando reporte de incidentes empleados, cantidad: " + incidenList.size());
-
-        try (PrintWriter printWriter = new PrintWriter(file)) {
-            printWriter.println(format("%s %s %s %s %s", "TipoIncidente", "Patente", "Fecha", "Latitud", "Longitud"));
-            incidenList.forEach(inc -> {
-                String tipoIncidente = "";
-                if (inc.estaFueraDeRadio()) {
-                    tipoIncidente = "Salió del radio permitido";
-                } else {
-                    tipoIncidente = "Entró a zona peligrosa";
-                }
-
-
-                printWriter.println(String.format("%s,%s,%s,%s,%s",
-                        tipoIncidente,
-                        inc.getVehiculo().getPatente(),
-                        inc.getFecha().toString(),
-                        inc.getLatitud(),
-                        inc.getLongitud()
-                ));
+            pruebas = jwTService.getWithJwt(token, url, new ParameterizedTypeReference<List<PruebaDTO>>() {
             });
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException("No se ha encontrado el archivo");
-        }}
-        else {
-            throw new Exception ("Token JWT no proporcionado o inválido.");
+
+            if (pruebas.isEmpty()) {
+                throw new NoPruebasEncontradasException("No se encontraron pruebas para el empleado con id: " + id);
+            }
+
+            for (PruebaDTO pruebaDTO : pruebas) {
+                Optional<Posicion> incidente = posicionService.obtenerEntreFechasIncidente
+                        (pruebaDTO.getFechaInicio(), pruebaDTO.getFechaFin(), pruebaDTO.getIdvehiculo());
+                if (incidente.isPresent()) {
+                    incidenList.add(incidente.get());
+                }
+            }
+
+            String fileName = "reporteIncidentesEmpleado.csv";
+
+            File file = new File(filePath + "/" + fileName);
+
+            System.out.println("Generando reporte de incidentes empleados, cantidad: " + incidenList.size());
+
+            try (PrintWriter printWriter = new PrintWriter(file)) {
+                printWriter.println(format("%s %s %s %s %s", "TipoIncidente", "Patente", "Fecha", "Latitud", "Longitud"));
+                incidenList.forEach(inc -> {
+                    String tipoIncidente = "";
+                    if (inc.estaFueraDeRadio()) {
+                        tipoIncidente = "Salió del radio permitido";
+                    } else {
+                        tipoIncidente = "Entró a zona peligrosa";
+                    }
+
+
+                    printWriter.println(String.format("%s,%s,%s,%s,%s",
+                            tipoIncidente,
+                            inc.getVehiculo().getPatente(),
+                            inc.getFecha().toString(),
+                            inc.getLatitud(),
+                            inc.getLongitud()
+                    ));
+                });
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException("No se ha encontrado el archivo");
+            }
+        } else {
+            throw new Exception("Token JWT no proporcionado o inválido.");
         }
     }
 
@@ -171,105 +174,98 @@ public class ServiceReports {
 
     }
 
-    public List<ReporteDTO> generarReportePruebasDetalle(HttpServletRequest request) throws Exception {
+    public List<ReporteDTO> generarReportePruebasDetalle(Integer id, HttpServletRequest request) throws Exception {
 
         String authHeader = request.getHeader("Authorization");
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
 
-        String token = authHeader.substring(7);
-
-
+            String token = authHeader.substring(7);
             List<PruebaDTO> pruebas = new ArrayList<>();
+            String url = APIPRUEBAS_PARAVEHICULO + "/" + id;
+            pruebas = jwTService.getWithJwt(token, url, new ParameterizedTypeReference<List<PruebaDTO>>() {
+            });
 
-            pruebas = jwTService.getWithJwt(token, APIPRUEBAS, new ParameterizedTypeReference<List<PruebaDTO>>() {});
-            /*
-            // Verificar si la respuesta fue exitosa
-        if (!responsePruebas.getStatusCode().is2xxSuccessful()) {
-            throw new RuntimeException("Error al obtener las pruebas");
-        }
-
-        List<PruebaDTO> pruebas = responsePruebas.getBody();
-        */
-
-        List<ReporteDTO> reporteDTOS = new ArrayList<>();
-        // Ruta y nombre del archivo
-        String fileName = "reportePruebasConDetalle.csv";
-        File file = new File(filePath + "/" + fileName);
-
-        try (PrintWriter printWriter = new PrintWriter(file)) { // Abrir el archivo en modo write
-
-            // Escribir el encabezado del archivo CSV si el archivo está vacío
-            if (file.length() == 0) {
-                printWriter.println("\"Fecha Inicio\",\"Fecha Fin\",\"Apellido Interesado\",\"Nombre Interesado\",\"Documento Interesado\",\"Licencia Interesado\",\"Nombre Empleado\",\"Apellido Empleado\",\"Telefono Empleado\"");
+            if (pruebas.isEmpty()) {
+                throw new NoPruebasEncontradasException("No se encontraron pruebas para el vehiculo con id: " + id);
             }
 
-            // Recorrer las pruebas y agregar la información en el archivo
-            for (PruebaDTO prueba : pruebas) {
+            List<ReporteDTO> reporteDTOS = new ArrayList<>();
+            // Ruta y nombre del archivo
+            String fileName = "reportePruebasConDetalle.csv";
+            File file = new File(filePath + "/" + fileName);
 
-                // Obtener detalles de empleado e interesado usando exchange() para manejar ResponseEntity
-                /*
-                ResponseEntity<EmpleadoDTO> empleadoResponse = restTemplate.exchange(
-                        APIEMPLEADO + "/" + prueba.getLegajo_empleado(),
-                        HttpMethod.GET,
-                        null,
-                        EmpleadoDTO.class
-                );*/
-                String URIEmpleado = APIEMPLEADO + "/" + prueba.getLegajo_empleado();
-                EmpleadoDTO empleadoDTO = null;
+            try (PrintWriter printWriter = new PrintWriter(file)) { // Abrir el archivo en modo write
 
-                empleadoDTO = jwTService.getWithJwt(token, URIEmpleado, new ParameterizedTypeReference<EmpleadoDTO>(){});
+                // Escribir el encabezado del archivo CSV si el archivo está vacío
+                if (file.length() == 0) {
+                    printWriter.println("\"Fecha Inicio\",\"Fecha Fin\",\"Apellido Interesado\",\"Nombre Interesado\",\"Documento Interesado\",\"Licencia Interesado\",\"Nombre Empleado\",\"Apellido Empleado\",\"Telefono Empleado\"");
+                }
 
+                // Recorrer las pruebas y agregar la información en el archivo
+                for (PruebaDTO prueba : pruebas) {
 
-                String UriInteresado = APIPRUEBAINTERESADO + "/" + prueba.getId_interesado();
-                InteresadoDTO interesadoDTO = jwTService.getWithJwt(token, UriInteresado, new ParameterizedTypeReference<InteresadoDTO>() {});
+                    // Obtener detalles de empleado e interesado usando exchange() para manejar ResponseEntity
+                    /* ResponseEntity<EmpleadoDTO> empleadoResponse = restTemplate.exchange(
+                            APIEMPLEADO + "/" + prueba.getLegajo_empleado(),
+                            HttpMethod.GET,
+                            null,
+                            EmpleadoDTO.class
+                    );*/
+                    String URIEmpleado = APIEMPLEADO + "/" + prueba.getLegajo_empleado();
+                    EmpleadoDTO empleadoDTO = jwTService.getWithJwt(token, URIEmpleado, new ParameterizedTypeReference<EmpleadoDTO>() {
+                    });
 
-                // Imprimir la respuesta para verificar su contenido
-                /*
-                System.out.println("Respuesta de la API de EmpleadoDTO: " + empleadoResponse.getBody());
-                EmpleadoDTO empleadoDTO = empleadoResponse.getBody();
-                ResponseEntity<InteresadoDTO> interesadoResponse = restTemplate.exchange(
-                        APIPRUEBAINTERESADO + "/" + prueba.getId_interesado(),
-                        HttpMethod.GET,
-                        null,
-                        InteresadoDTO.class
-                );
-                InteresadoDTO interesadoDTO = interesadoResponse.getBody();
-                */
-                // Validar si los objetos no son null
-                if (empleadoDTO != null && interesadoDTO != null) {
-                    // Formatear y escribir la línea en el archivo CSV, protegiendo los datos con comillas si contienen comas
-                    printWriter.println(String.format("\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
-                            prueba.getFechaHoraInicio(),
-                            prueba.getFechaHoraFin(),
-                            interesadoDTO.getApellido(),
-                            interesadoDTO.getNombre(),
-                            interesadoDTO.getDocumento(),
-                            interesadoDTO.getNro_licencia(),
-                            empleadoDTO.getNombre(),
-                            empleadoDTO.getApellido(),
-                            empleadoDTO.getTelefonoContacto()
-                    ));
-                    reporteDTOS.add(new ReporteDTO(
-                            prueba.getFechaHoraInicio(),
-                            prueba.getFechaHoraFin(),
-                            interesadoDTO.getApellido(),
-                            interesadoDTO.getNombre(),
-                            interesadoDTO.getDocumento(),
-                            interesadoDTO.getNro_licencia(),
-                            empleadoDTO.getNombre(),
-                            empleadoDTO.getApellido(),
-                            empleadoDTO.getTelefonoContacto()
-                    ));
-                    printWriter.flush();
-                } else {
-                    // Manejo de error si no se encuentra el empleado o el interesado
-                    System.out.println("Empleado o interesado no encontrado para la prueba: " + prueba.getId());
+                    String UriInteresado = APIPRUEBAINTERESADO + "/" + prueba.getId_interesado();
+                    InteresadoDTO interesadoDTO = jwTService.getWithJwt(token, UriInteresado, new ParameterizedTypeReference<InteresadoDTO>() {
+                    });
+
+                    // Imprimir la respuesta para verificar su contenido
+                    /* System.out.println("Respuesta de la API de EmpleadoDTO: " + empleadoResponse.getBody());
+                    EmpleadoDTO empleadoDTO = empleadoResponse.getBody();
+                    ResponseEntity<InteresadoDTO> interesadoResponse = restTemplate.exchange(
+                            APIPRUEBAINTERESADO + "/" + prueba.getId_interesado(),
+                            HttpMethod.GET,
+                            null,
+                            InteresadoDTO.class
+                    );
+                    InteresadoDTO interesadoDTO = interesadoResponse.getBody();*/
+
+                    // Validar si los objetos no son null
+                    if (empleadoDTO != null && interesadoDTO != null) {
+                        // Formatear y escribir la línea en el archivo CSV, protegiendo los datos con comillas si contienen comas
+                        printWriter.println(String.format("\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
+                                prueba.getFechaHoraInicio(),
+                                prueba.getFechaHoraFin(),
+                                interesadoDTO.getApellido(),
+                                interesadoDTO.getNombre(),
+                                interesadoDTO.getDocumento(),
+                                interesadoDTO.getNro_licencia(),
+                                empleadoDTO.getNombre(),
+                                empleadoDTO.getApellido(),
+                                empleadoDTO.getTelefonoContacto()
+                        ));
+                        reporteDTOS.add(new ReporteDTO(
+                                prueba.getFechaHoraInicio(),
+                                prueba.getFechaHoraFin(),
+                                interesadoDTO.getApellido(),
+                                interesadoDTO.getNombre(),
+                                interesadoDTO.getDocumento(),
+                                interesadoDTO.getNro_licencia(),
+                                empleadoDTO.getNombre(),
+                                empleadoDTO.getApellido(),
+                                empleadoDTO.getTelefonoContacto()
+                        ));
+                        printWriter.flush();
+                    } else {
+                        // Manejo de error si no se encuentra el empleado o el interesado
+                        System.out.println("Empleado o interesado no encontrado para la prueba: " + prueba.getId());
+                    }
                 }
             }
-        }
             return reporteDTOS;
-        }else {
+        } else {
             throw new RuntimeException("Token JWT no proporcionado o inválido.");
-        }}
+        }
+    }
 }
