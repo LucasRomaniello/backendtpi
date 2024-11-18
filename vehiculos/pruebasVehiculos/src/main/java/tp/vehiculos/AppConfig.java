@@ -29,9 +29,9 @@ public class AppConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(authorize -> authorize
-                // Esta ruta puede ser accedida por cualquier ROL
+                // Esta ruta puede ser accedida por cualquier usuario asociado a un vehículo
                 .requestMatchers("/api/posicion/**")
-                .permitAll()
+                .hasAuthority("VEHICULO")
 
                 .requestMatchers("/api/vehiculos/**")
                 .permitAll()
