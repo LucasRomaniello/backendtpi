@@ -2,6 +2,7 @@ package tp.vehiculos.Reportes.controllers;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +13,7 @@ import tp.vehiculos.Reportes.Services.ServiceReports;
 import tp.vehiculos.Reportes.dto.ReporteDTO;
 import tp.vehiculos.vehiculos.dtos.InformeKmRequest;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -66,15 +68,29 @@ public class ReportesController {
 //            return ResponseEntity.ok("Reporte generado con éxito");
 //    }
 
-    @PostMapping("/informeKmRecorridos")
-    public ResponseEntity<String> calcularKMParaVehiculoEnPeriodo(@RequestBody InformeKmRequest informeKmRequest){
+//    @PostMapping("/informeKmRecorridos")
+//    public ResponseEntity<String> calcularKMParaVehiculoEnPeriodo(@RequestBody InformeKmRequest informeKmRequest){
+//        try {
+//            System.out.println(informeKmRequest);
+//            serviceReports.generarReporteCantidadKm(informeKmRequest.getFechaDesde(),informeKmRequest.getFechaHasta(), informeKmRequest.getId_vehiculo());
+//            return ResponseEntity.ok("Reporte generado con éxito");
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            throw new RuntimeException(e);
+//        }
+//    }
+
+    //ejemplo de prueba /informeKmRecorridos?id_vehiculo=1&fecha_desde=2024-09-07T19:47:19.385313900&fecha_hasta=2024-11-07T19:47:26.564607200
+    @GetMapping("/informeKmRecorridos")
+    public ResponseEntity<String> calcularKMParaVehiculoEnPeriodo(
+            @RequestParam("id_vehiculo") int id_vehiculo,
+            @RequestParam("fecha_desde") LocalDateTime fecha_desde,
+            @RequestParam("fecha_hasta") LocalDateTime fecha_hasta) {
         try {
-            System.out.println(informeKmRequest);
-            serviceReports.generarReporteCantidadKm(informeKmRequest.getFechaDesde(),informeKmRequest.getFechaHasta(), informeKmRequest.getId_vehiculo());
+            serviceReports.generarReporteCantidadKm(fecha_desde, fecha_hasta, id_vehiculo);
             return ResponseEntity.ok("Reporte generado con éxito");
         } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
+            return ResponseEntity.internalServerError().body("Ocurrió un error al generar el reporte.");
         }
     }
 
