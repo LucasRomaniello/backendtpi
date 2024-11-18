@@ -7,9 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.web.servlet.resource.ResourceUrlProvider;
-import tp.vehiculos.Reportes.Services.JwTService;
+import tp.vehiculos.auth.JwTService;
 import tp.vehiculos.Reportes.Services.ServiceReports;
-import tp.vehiculos.Reportes.dto.PruebaDTO;
 import tp.vehiculos.Reportes.dto.ReporteDTO;
 import tp.vehiculos.vehiculos.dtos.InformeKmRequest;
 
@@ -85,8 +84,13 @@ public class ReportesController {
 
 
     @GetMapping("/detallesPruebas")
-    public ResponseEntity<List<ReporteDTO>> generarReporteDetallePrueba() {
-        List<ReporteDTO> reporteDTOS = serviceReports.generarReportePruebasDetalle();
+    public ResponseEntity<List<ReporteDTO>> generarReporteDetallePrueba(HttpServletRequest request) {
+        List<ReporteDTO> reporteDTOS = null;
+        try {
+            reporteDTOS = serviceReports.generarReportePruebasDetalle(request);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         if (reporteDTOS.isEmpty()) {
             return ResponseEntity.noContent().build();
         } else {

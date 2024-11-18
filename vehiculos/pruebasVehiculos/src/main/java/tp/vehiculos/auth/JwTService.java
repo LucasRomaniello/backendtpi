@@ -1,11 +1,9 @@
-package tp.vehiculos.Reportes.Services;
+package tp.vehiculos.auth;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-
-import java.lang.reflect.ParameterizedType;
 
 @Service
 public class JwTService {

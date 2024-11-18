@@ -9,10 +9,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -21,6 +20,7 @@ import tp.vehiculos.Reportes.dto.EmpleadoDTO;
 import tp.vehiculos.Reportes.dto.InteresadoDTO;
 import tp.vehiculos.Reportes.dto.PruebaDTO;
 import tp.vehiculos.Reportes.dto.ReporteDTO;
+import tp.vehiculos.auth.JwTService;
 import tp.vehiculos.vehiculos.models.Posicion;
 import tp.vehiculos.vehiculos.services.PosicionService;
 
@@ -171,22 +171,27 @@ public class ServiceReports {
 
     }
 
-    public List<ReporteDTO> generarReportePruebasDetalle() {
-        // Obtener las pruebas desde la API
-        ResponseEntity<List<PruebaDTO>> responsePruebas = restTemplate.exchange(
-                APIPRUEBAS, // URL de la API
-                HttpMethod.GET, // Método HTTP
-                null, // Headers o request body si se necesita
-                new ParameterizedTypeReference<List<PruebaDTO>>() {
-                } // Tipo esperado
-        );
+    public List<ReporteDTO> generarReportePruebasDetalle(HttpServletRequest request) throws Exception {
 
-        // Verificar si la respuesta fue exitosa
+        String authHeader = request.getHeader("Authorization");
+
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+
+        String token = authHeader.substring(7);
+
+
+            List<PruebaDTO> pruebas = new ArrayList<>();
+
+            pruebas = jwTService.getWithJwt(token, APIPRUEBAS, new ParameterizedTypeReference<List<PruebaDTO>>() {});
+            /*
+            // Verificar si la respuesta fue exitosa
         if (!responsePruebas.getStatusCode().is2xxSuccessful()) {
             throw new RuntimeException("Error al obtener las pruebas");
         }
 
         List<PruebaDTO> pruebas = responsePruebas.getBody();
+        */
+
         List<ReporteDTO> reporteDTOS = new ArrayList<>();
         // Ruta y nombre del archivo
         String fileName = "reportePruebasConDetalle.csv";
@@ -203,16 +208,25 @@ public class ServiceReports {
             for (PruebaDTO prueba : pruebas) {
 
                 // Obtener detalles de empleado e interesado usando exchange() para manejar ResponseEntity
+                /*
                 ResponseEntity<EmpleadoDTO> empleadoResponse = restTemplate.exchange(
                         APIEMPLEADO + "/" + prueba.getLegajo_empleado(),
                         HttpMethod.GET,
                         null,
                         EmpleadoDTO.class
-                );
+                );*/
+                String URIEmpleado = APIEMPLEADO + "/" + prueba.getLegajo_empleado();
+                EmpleadoDTO empleadoDTO = null;
+
+                empleadoDTO = jwTService.getWithJwt(token, URIEmpleado, new ParameterizedTypeReference<EmpleadoDTO>(){});
+
+
+                String UriInteresado = APIPRUEBAINTERESADO + "/" + prueba.getId_interesado();
+                InteresadoDTO interesadoDTO = jwTService.getWithJwt(token, UriInteresado, new ParameterizedTypeReference<InteresadoDTO>() {});
 
                 // Imprimir la respuesta para verificar su contenido
+                /*
                 System.out.println("Respuesta de la API de EmpleadoDTO: " + empleadoResponse.getBody());
-
                 EmpleadoDTO empleadoDTO = empleadoResponse.getBody();
                 ResponseEntity<InteresadoDTO> interesadoResponse = restTemplate.exchange(
                         APIPRUEBAINTERESADO + "/" + prueba.getId_interesado(),
@@ -221,7 +235,7 @@ public class ServiceReports {
                         InteresadoDTO.class
                 );
                 InteresadoDTO interesadoDTO = interesadoResponse.getBody();
-
+                */
                 // Validar si los objetos no son null
                 if (empleadoDTO != null && interesadoDTO != null) {
                     // Formatear y escribir la línea en el archivo CSV, protegiendo los datos con comillas si contienen comas
@@ -253,10 +267,9 @@ public class ServiceReports {
                     System.out.println("Empleado o interesado no encontrado para la prueba: " + prueba.getId());
                 }
             }
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException("No se ha encontrado el archivo o no se pudo crear: " + e.getMessage());
         }
-
-        return reporteDTOS;
-
-    }}
+            return reporteDTOS;
+        }else {
+            throw new RuntimeException("Token JWT no proporcionado o inválido.");
+        }}
+}
