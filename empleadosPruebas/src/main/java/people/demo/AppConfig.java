@@ -23,18 +23,18 @@ public class AppConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(authorize -> authorize
-                // Esta ruta puede ser accedida por cualquier ROL
+                // Esta ruta puede ser accedida por ADMINISTRADORES Y EMPLEADOS
                 .requestMatchers("/empleados/**")
                 .hasAnyAuthority("ADMIN", "EMPLEADO")
-                // Esta ruta puede ser accedida por cualquier ROL
+                // Esta ruta puede ser accedida por ADMINISTRADORES Y EMPLEADOS
                 .requestMatchers("/interesados/**")
                 .hasAnyAuthority("ADMIN", "EMPLEADO")
-                // Esta ruta puede ser accedida por cualquier ROL
+                // Esta ruta puede ser accedida por EMPLEADOS
                 .requestMatchers("/notificarVehiculo/**")
-                .permitAll()
-                // Esta ruta puede ser accedida por cualquier ROL
+                .hasAuthority("EMPLEADO")
+                // Esta ruta puede ser accedida por EMPLEADOS
                 .requestMatchers("/notificarPromocion/**")
-                .permitAll()
+                .hasAnyAuthority("EMPLEADO")
                 // Esta ruta puede ser accedida por cualquier ROL
                 .requestMatchers("/pruebas/**")
                 .hasAnyAuthority("ADMIN","EMPLEADO","VEHICULO")
