@@ -4,10 +4,13 @@ import java.io.*;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -34,37 +37,29 @@ public class ServiceReports {
     private static final String APIEMPLEADO = "http://localhost:8001/empleados";
     private static final String APIPRUEBAINTERESADO = "http://localhost:8001/interesados";
     private final String filePath = System.getProperty("user.dir");
-
+    private final JwTService jwTService;
 
     @Autowired
-    public ServiceReports(RestTemplate restTemplate, PosicionService posicionService) {
+    public ServiceReports(RestTemplate restTemplate, PosicionService posicionService, JwTService jwTService) {
         this.posicionService = posicionService;
         this.restTemplate = restTemplate;
+        this.jwTService = jwTService;
     }
 
-    public void generarReporteIncidentes() {
+    public void generarReporteIncidentes(HttpServletRequest request) throws Exception {
 
-        /*
-        List<PruebaDTO> pruebas = restTemplate.getForObject(APIPRUEBAS, List.class);
+        List<PruebaDTO> pruebas = new ArrayList<>();
         List<Posicion> incidenList = new ArrayList<>();
 
-        for (PruebaDTO pruebaDTO : pruebas) {
-            Optional<Posicion> incidente = posicionService.obtenerEntreFechasIncidente(pruebaDTO.getFechaFin(), pruebaDTO.getFechaInicio(), pruebaDTO.getIdVehiculo());
-            if(incidente.isPresent()){
-                incidenList.add(incidente.get());
-            }
-        }*/
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            // Extraer el token JWT del encabezado (quitar "Bearer ")
+            String token = authHeader.substring(7);
 
-        // Cambiar List.class por un ParameterizedTypeReference para List<PruebaDTO>
-        List<PruebaDTO> pruebas = restTemplate.exchange(
-                APIPRUEBAS, // URL de la API
-                HttpMethod.GET, // Método HTTP
-                null, // Headers o request body si se necesita
-                new ParameterizedTypeReference<List<PruebaDTO>>() {
-                } // Tipo esperado
-        ).getBody();
+        pruebas = jwTService.getWithJwt(token, APIPRUEBAS, new ParameterizedTypeReference<List<PruebaDTO>>() {});
 
-        List<Posicion> incidenList = new ArrayList<>();
+
+
         for (PruebaDTO pruebaDTO : pruebas) {
             Optional<Posicion> incidente = posicionService.obtenerEntreFechasIncidente
                     (pruebaDTO.getFechaInicio(), pruebaDTO.getFechaFin(), pruebaDTO.getIdvehiculo());
@@ -72,6 +67,7 @@ public class ServiceReports {
                 incidenList.add(incidente.get());
             }
         }
+        System.out.println("PASO EL FOR de pruebas dto");
         // Especificar el nombre del archivo
 
         String fileName = "reporteTotalIncidentes.csv";
@@ -98,8 +94,10 @@ public class ServiceReports {
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
+        }else {
+            throw new Exception ("Token JWT no proporcionado o inválido.");
+        }
     }
-
 
     public void generarReporteIncidentesEmpleado(Integer id) {
 

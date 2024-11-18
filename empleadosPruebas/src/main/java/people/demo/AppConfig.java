@@ -3,6 +3,13 @@ package people.demo;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.web.SecurityFilterChain;
 
 import java.util.Collection;
 import java.util.List;
@@ -11,22 +18,26 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 @Configuration
-// @EnableWebSecurity
+@EnableWebSecurity
 public class AppConfig {
-    /*
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(authorize -> authorize
                 // Esta ruta puede ser accedida por cualquier ROL
-                .requestMatchers("/api/posicion/**")
+                .requestMatchers("/empleados/**")
+                .hasAnyAuthority("ADMIN", "EMPLEADO")
+                // Esta ruta puede ser accedida por cualquier ROL
+                .requestMatchers("/interesados/**")
+                .hasAnyAuthority("ADMIN", "EMPLEADO")
+                // Esta ruta puede ser accedida por cualquier ROL
+                .requestMatchers("/notificarVehiculo/**")
                 .permitAll()
-
-                .requestMatchers("/api/vehiculos/**")
+                // Esta ruta puede ser accedida por cualquier ROL
+                .requestMatchers("/notificarPromocion/**")
                 .permitAll()
-
-                // Esta ruta puede ser accedida por Administradores
-                .requestMatchers("/api/reportes/**")
-                .hasAuthority("ADMIN")
+                // Esta ruta puede ser accedida por cualquier ROL
+                .requestMatchers("/pruebas/**")
+                .hasAnyAuthority("ADMIN","EMPLEADO","VEHICULO")
 
                 .anyRequest()
                 .authenticated()
@@ -34,7 +45,6 @@ public class AppConfig {
         ).oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
         return http.build();
     }
-
     interface AuthoritiesConverter extends Converter<Map<String, Object>, Collection<GrantedAuthority>> {}
 
     @Bean
@@ -60,5 +70,6 @@ public class AppConfig {
             return authoritiesConverter.convert(jwt.getClaims());
         });
         return authenticationConverter;
-    } */
+    }
+
 }

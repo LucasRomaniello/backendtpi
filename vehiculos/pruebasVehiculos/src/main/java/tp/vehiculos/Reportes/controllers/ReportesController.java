@@ -1,12 +1,15 @@
 package tp.vehiculos.Reportes.controllers;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import org.springframework.web.servlet.resource.ResourceUrlProvider;
+import tp.vehiculos.Reportes.Services.JwTService;
 import tp.vehiculos.Reportes.Services.ServiceReports;
+import tp.vehiculos.Reportes.dto.PruebaDTO;
 import tp.vehiculos.Reportes.dto.ReporteDTO;
 import tp.vehiculos.vehiculos.dtos.InformeKmRequest;
 
@@ -18,11 +21,13 @@ public class ReportesController {
 
     private final ServiceReports serviceReports;
     private final ResourceUrlProvider resourceUrlProvider;
+    private final JwTService jwTService;
 
     @Autowired
-    public ReportesController(ServiceReports serviceReports, ResourceUrlProvider resourceUrlProvider) {
+    public ReportesController(ServiceReports serviceReports, ResourceUrlProvider resourceUrlProvider, JwTService jwTService) {
         this.serviceReports = serviceReports;
         this.resourceUrlProvider = resourceUrlProvider;
+        this.jwTService = jwTService;
     }
      /*
     @GetMapping("/incidentes")
@@ -32,9 +37,9 @@ public class ReportesController {
     }*/
 
     @GetMapping("/incidentes")
-    public ResponseEntity<String> generarReporteIncidentes() {
+    public ResponseEntity<String> generarReporteIncidentes(HttpServletRequest request) {
         try {
-            serviceReports.generarReporteIncidentes();
+            serviceReports.generarReporteIncidentes(request);
             return ResponseEntity.ok("Reporte generado con éxito.");
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -52,9 +57,9 @@ public class ReportesController {
     } */
 
     @GetMapping("/incidentesEmpleado/{id}")
-    public ResponseEntity<String> generarReporteIncidentesEmpleado(@PathVariable Integer id) {
+    public ResponseEntity<String> generarReporteIncidentesEmpleado(@PathVariable Integer id,
+                                                                   HttpServletRequest request) {
         try {
-            // Intentamos generar el reporte para el empleado con el ID proporcionado
             serviceReports.generarReporteIncidentesEmpleado(id);
             // Si tod sale bien, devolvemos un mensaje de éxito
             return ResponseEntity.ok("Reporte generado con éxito para el empleado con ID " + id);
@@ -87,7 +92,10 @@ public class ReportesController {
         } else {
             return ResponseEntity.ok(reporteDTOS);
         }
+    }
 
-    }}
+
+
+}
 
 
