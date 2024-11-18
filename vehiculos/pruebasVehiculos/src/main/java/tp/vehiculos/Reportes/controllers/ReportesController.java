@@ -66,7 +66,7 @@ public class ReportesController {
 //            return ResponseEntity.ok("Reporte generado con éxito");
 //    }
 
-    @GetMapping("/informeKmRecorridos")
+    @PostMapping("/informeKmRecorridos")
     public ResponseEntity<String> calcularKMParaVehiculoEnPeriodo(@RequestBody InformeKmRequest informeKmRequest){
         try {
             System.out.println(informeKmRequest);
