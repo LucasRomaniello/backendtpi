@@ -1,16 +1,8 @@
-package tp.vehiculos;
+package people.demo;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
-import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
-import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.Collection;
 import java.util.List;
@@ -19,13 +11,9 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 @Configuration
-@EnableWebSecurity
+// @EnableWebSecurity
 public class AppConfig {
-    @Bean
-    public RestTemplate restTemplate() {
-        return new RestTemplate();
-    }
-
+    /*
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(authorize -> authorize
@@ -72,7 +60,5 @@ public class AppConfig {
             return authoritiesConverter.convert(jwt.getClaims());
         });
         return authenticationConverter;
-    }
-
+    } */
 }
-
