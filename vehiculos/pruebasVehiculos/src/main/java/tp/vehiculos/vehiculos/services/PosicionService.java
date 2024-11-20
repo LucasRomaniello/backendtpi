@@ -45,7 +45,8 @@ public class PosicionService {
 
     public void procesarPosicion(PosicionDto posicionDto, HttpServletRequest request) throws Exception {
         Optional<Vehiculo> vehiculo = serviceVehiculos.getVehiculoById(posicionDto.getId_vehiculo());
-        if (vehiculo.isEmpty()) throw new RuntimeException("No vehículo registrado con id: " + posicionDto.getId_vehiculo());
+        if (vehiculo.isEmpty())
+            throw new RuntimeException("No vehículo registrado con id: " + posicionDto.getId_vehiculo());
 
         String authHeader = request.getHeader("Authorization");
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
@@ -54,43 +55,44 @@ public class PosicionService {
             String token = authHeader.substring(7);
 
             //Ver si el vehiculo esta en una prueba acorde a su id
-        //Para resolver lo mencionado se realiza la consulta al otro microservicio con la API definida
+            //Para resolver lo mencionado se realiza la consulta al otro microservicio con la API definida
 
             Optional<PruebaDTO> pruebaOptional = Optional.ofNullable(jwTService.getWithJwt(token, API_VEHICULO_EN_PRUEBA + vehiculo.get().getId(), new ParameterizedTypeReference<PruebaDTO>() {
             }));
 
-            if(pruebaOptional.isPresent()){
-            if (vehiculo.isPresent()) {
-                Posicion posicion = new Posicion(vehiculo.get(), posicionDto.getLatitud(), posicionDto.getLongitud());
-                ConfiguracionAgencia agencia = serviceConfiguracion.obtenerConfiguration();
-                boolean necesarioNotificar = agencia.asegurarCumplimientoNormas(posicion);
-                guardarPosicion(posicion);
-                if (necesarioNotificar){
-                    System.out.println("Enviando notificacion");
-                    //Descomentar lo que esta abajo para notificar
-                    //Este envia una peticion al otro microservicio con el cuerpo de NOTIFICACIONDTO que coincide con POSICIONDTO
-                    //Y al momento de ejecutarse se guarda en la base de datos. El id de la notificacion es autoincremental
-                    //ResponseEntity<Void> response = restTemplate.postForEntity(API_URL, posicion.toDto(), Void.class);
-                    sendRequestWithToken(posicion, token);
-                }else{
-                    System.out.println("No enviar notificacion");
+            if (pruebaOptional.isPresent()) {
+                if (vehiculo.isPresent()) {
+                    Posicion posicion = new Posicion(vehiculo.get(), posicionDto.getLatitud(), posicionDto.getLongitud());
+                    ConfiguracionAgencia agencia = serviceConfiguracion.obtenerConfiguration();
+                    boolean necesarioNotificar = agencia.asegurarCumplimientoNormas(posicion);
+                    guardarPosicion(posicion);
+                    if (necesarioNotificar) {
+                        System.out.println("Enviando notificacion");
+                        //Descomentar lo que esta abajo para notificar
+                        //Este envia una peticion al otro microservicio con el cuerpo de NOTIFICACIONDTO que coincide con POSICIONDTO
+                        //Y al momento de ejecutarse se guarda en la base de datos. El id de la notificacion es autoincremental
+                        //ResponseEntity<Void> response = restTemplate.postForEntity(API_URL, posicion.toDto(), Void.class);
+                        sendRequestWithToken(posicion, token);
+                    } else {
+                        System.out.println("No enviar notificacion");
+                    }
+                } else {
+                    throw new RuntimeException("No vehículo registrado con id: " + posicionDto.getId_vehiculo());
                 }
             } else {
-                throw new RuntimeException("No vehículo registrado con id: " + posicionDto.getId_vehiculo());
-            }
-        } else {
                 throw new Exception("Token JWT no proporcionado o inválido.");
             }
         }
 
     }
 
-    public double calcularCantidadKm(LocalDateTime fechaInicio, LocalDateTime fechaFin, int idVehiculo){
-        List<Posicion> posiciones = obtenerEntreFechas(fechaInicio,fechaFin, idVehiculo);
+    public double calcularCantidadKm(LocalDateTime fechaInicio, LocalDateTime fechaFin, int idVehiculo) {
+        List<Posicion> posiciones = obtenerEntreFechas(fechaInicio, fechaFin, idVehiculo);
 
-        if (posiciones.isEmpty()){
+        if (posiciones.isEmpty()) {
             throw new PosicionesNoEncontradas("Posiciones no encontradas para ese vehiculo");
-        };
+        }
+        ;
 
         System.out.println(posiciones.getFirst());
 
@@ -108,19 +110,20 @@ public class PosicionService {
         return distanciaTotal;
     }
 
-    public List<Posicion> obtenerEntreFechas(LocalDateTime fechaInicio,LocalDateTime fechaFin, int idVehiculo){
+    public List<Posicion> obtenerEntreFechas(LocalDateTime fechaInicio, LocalDateTime fechaFin, int idVehiculo) {
         return repository.findByFechaBetweenAndVehiculoId(fechaInicio, fechaFin, idVehiculo);
 
     }
-    public Optional<Posicion> obtenerEntreFechasIncidente(LocalDateTime fechaInicio,LocalDateTime fechaFin, int idVehiculo){
+
+    public Optional<Posicion> obtenerEntreFechasIncidente(LocalDateTime fechaInicio, LocalDateTime fechaFin, int idVehiculo) {
         Optional<Posicion> incidente = repository.findIncidente(fechaInicio, fechaFin, idVehiculo);
-        
+
         return incidente;
 
 
     }
 
-    public void guardarPosicion(Posicion posicion){
+    public void guardarPosicion(Posicion posicion) {
         repository.save(posicion);
 
     }

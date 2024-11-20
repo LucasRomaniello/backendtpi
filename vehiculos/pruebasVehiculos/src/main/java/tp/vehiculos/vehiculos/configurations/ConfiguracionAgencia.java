@@ -17,6 +17,7 @@ public class ConfiguracionAgencia {
     private List<ZonaRestringida> zonasRestringidas;
 
     public boolean asegurarCumplimientoNormas(Posicion posicion){
+        //devuelve true si es necesario notificar y false si todo esta en orden
         if (fueraDeRadio(posicion) || enZonaRestringida(posicion)){
             return true;
         } else {

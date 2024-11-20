@@ -25,8 +25,6 @@ public class PosicionController {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
-
     }
 
 
