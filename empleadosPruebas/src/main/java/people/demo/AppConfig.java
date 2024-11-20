@@ -35,9 +35,9 @@ public class AppConfig {
                 // Esta ruta puede ser accedida por EMPLEADOS
                 .requestMatchers("/notificarPromocion/**")
                 .hasAnyAuthority("EMPLEADO")
-                // Esta ruta puede ser accedida por cualquier ROL
+                // Esta ruta puede ser accedida por cualquier ROL VEHICULO Y ADMIN POR LO QUE NECESITAN COMUNICACION CON EL OTRO MS
                 .requestMatchers("/pruebas/**")
-                .hasAnyAuthority("EMPLEADO","VEHICULO")
+                .hasAnyAuthority("EMPLEADO","VEHICULO", "ADMIN")
 
                 .anyRequest()
                 .authenticated()

@@ -45,22 +45,22 @@ public class PosicionService {
 
     public void procesarPosicion(PosicionDto posicionDto, HttpServletRequest request) throws Exception {
         Optional<Vehiculo> vehiculo = serviceVehiculos.getVehiculoById(posicionDto.getId_vehiculo());
+        if (vehiculo.isEmpty()) throw new RuntimeException("No vehículo registrado con id: " + posicionDto.getId_vehiculo());
 
         String authHeader = request.getHeader("Authorization");
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            System.out.println("Dentro del if authHeader");
+            System.out.println("Dentro del if authHeader" + vehiculo.toString());
             // Extraer el token JWT del encabezado (quitar "Bearer ")
             String token = authHeader.substring(7);
 
             //Ver si el vehiculo esta en una prueba acorde a su id
         //Para resolver lo mencionado se realiza la consulta al otro microservicio con la API definida
+
             Optional<PruebaDTO> pruebaOptional = Optional.ofNullable(jwTService.getWithJwt(token, API_VEHICULO_EN_PRUEBA + vehiculo.get().getId(), new ParameterizedTypeReference<PruebaDTO>() {
             }));
 
             if(pruebaOptional.isPresent()){
-                System.out.println("Prueba presente");
             if (vehiculo.isPresent()) {
-                System.out.println("Vehiculo presente");
                 Posicion posicion = new Posicion(vehiculo.get(), posicionDto.getLatitud(), posicionDto.getLongitud());
                 ConfiguracionAgencia agencia = serviceConfiguracion.obtenerConfiguration();
                 boolean necesarioNotificar = agencia.asegurarCumplimientoNormas(posicion);
@@ -76,7 +76,7 @@ public class PosicionService {
                     System.out.println("No enviar notificacion");
                 }
             } else {
-                System.out.println("Vehículo no encontrado con ID: " + posicionDto.getId_vehiculo());
+                throw new RuntimeException("No vehículo registrado con id: " + posicionDto.getId_vehiculo());
             }
         } else {
                 throw new Exception("Token JWT no proporcionado o inválido.");
