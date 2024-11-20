@@ -20,6 +20,7 @@ import java.util.stream.Stream;
 
 @Configuration
 @EnableWebSecurity
+
 public class AppConfig {
     @Bean
     public RestTemplate restTemplate() {
@@ -34,7 +35,7 @@ public class AppConfig {
                 .hasAuthority("VEHICULO")
 
                 .requestMatchers("/api/vehiculos/**")
-                .permitAll()
+                .hasAnyAuthority("ADMIN", "EMPLEADO")
 
                 // Esta ruta puede ser accedida por Administradores
                 .requestMatchers("/api/reportes/**")
