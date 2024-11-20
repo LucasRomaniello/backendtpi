@@ -18,6 +18,7 @@ import java.util.Set;
 @Table(name = "interesados")
 public class Interesado {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Column(name = "tipo_documento")
     private String tipo_documento;

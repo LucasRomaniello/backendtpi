@@ -18,6 +18,7 @@ import java.util.Set;
 @Entity @Table(name = "Empleados")
 public class Empleado {
     @Id //@Column(name = "LEGAJO")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer legajo;
     @Basic //@Column(name = "NOMBRE")
     private String nombre;

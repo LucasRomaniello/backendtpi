@@ -31,13 +31,13 @@ public class AppConfig {
                 .hasAnyAuthority("ADMIN", "EMPLEADO")
                 // Esta ruta puede ser accedida por EMPLEADOS
                 .requestMatchers("/notificarVehiculo/**")
-                .hasAuthority("EMPLEADO")
+                .hasAnyAuthority("EMPLEADO", "VEHICULO")
                 // Esta ruta puede ser accedida por EMPLEADOS
                 .requestMatchers("/notificarPromocion/**")
                 .hasAnyAuthority("EMPLEADO")
                 // Esta ruta puede ser accedida por cualquier ROL
                 .requestMatchers("/pruebas/**")
-                .hasAnyAuthority("ADMIN","EMPLEADO","VEHICULO")
+                .hasAnyAuthority("EMPLEADO","VEHICULO")
 
                 .anyRequest()
                 .authenticated()

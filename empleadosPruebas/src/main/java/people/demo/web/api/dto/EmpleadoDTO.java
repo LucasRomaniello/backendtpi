@@ -38,7 +38,7 @@ public class EmpleadoDTO {
         Empleado empleado = new Empleado();
         empleado.setLegajo(empleadoDTO.getLegajo());
         empleado.setNombre(empleadoDTO.getNombre());
-        empleado.setNombre(empleadoDTO.getNombre());
+        empleado.setApellido(empleadoDTO.getApellido());
         empleado.setTelefonoContacto(empleadoDTO.getTelefonoContacto());
         return empleado;
     }

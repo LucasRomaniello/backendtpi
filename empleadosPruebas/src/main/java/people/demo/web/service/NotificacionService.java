@@ -26,8 +26,9 @@ public class NotificacionService {
          notificacionDTO.setNroTelefono(pruebaActual.get().getEmpleado().getTelefonoContacto());
          Notificacion notificacion = notificacionRepository.save(notificacionDTO.toEntity(notificacionDTO));
          return new NotificacionDTO(notificacion);
+     }else{
+         throw new RuntimeException("Vehículo no encontrado en prueba.");
      }
-     return new NotificacionDTO();
 
     }
 

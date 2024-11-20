@@ -17,6 +17,7 @@ import java.util.Date;
 @Table(name = "pruebas")
 public class Prueba {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @ManyToOne(cascade = CascadeType.ALL)

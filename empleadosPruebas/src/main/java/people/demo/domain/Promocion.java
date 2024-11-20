@@ -15,6 +15,7 @@ import java.util.Set;
 @ToString
 public class Promocion {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int promocion_id;
 
     private String descripcion; //invento
