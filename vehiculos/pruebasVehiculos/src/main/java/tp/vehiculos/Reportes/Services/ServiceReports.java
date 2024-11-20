@@ -197,9 +197,15 @@ public class ServiceReports {
         List<PruebaDTO> pruebas = new ArrayList<>();
         String url = APIPRUEBAS_PARAVEHICULO + "/" + id;
 
-        pruebas = jwTService.getWithJwt(token, url, new ParameterizedTypeReference<List<PruebaDTO>>() {
-        });
-
+        //Este try se hace por si el vehiculo se encuentra en una prueba sin finalizar
+        try {
+            pruebas = jwTService.getWithJwt(token, url, new ParameterizedTypeReference<List<PruebaDTO>>() {
+            });
+        } catch (Exception e){
+            throw new NoPruebasEncontradasException(
+                    String.format("No se encontraron pruebas finalizadas para el vehículo con ID: %d en la URL: %s", id, url)
+            );
+        }
         if (pruebas.isEmpty()) {
             throw new NoPruebasEncontradasException(
                     String.format("No se encontraron pruebas para el vehículo con ID: %d en la URL: %s", id, url)
